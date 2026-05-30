@@ -120,4 +120,8 @@ return new class extends Migration
                         HINT:  The extension must first be installed on the system where PostgreSQL is running. 
 
                         SQL state: 0A000
+
+                        
+                        PS C:\Users\asus\EthioShare> git add database/migrations/0001_01_01_000000_create_users_table.php
+ git commit -m "feat(database) : create users table migration" -m "defined schema and column types users - Applied unique constraints and explicit indexes for kyc_tier and location"
             */
