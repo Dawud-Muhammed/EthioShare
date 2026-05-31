@@ -12,8 +12,41 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('handoff_locations', function (Blueprint $table) {
-            $table->id();
+            //--handoff_locations (QR-Based Pickup Points)
+            // Primary Key
+            $table->ulid('id')->primary();
+
+            // Core Relationship
+            $table->foreignUlid('asset_id')->constrained('assets')->cascadeOnDelete();
+
+            // Location Identity
+            $table->string('name', 255);
+            $table->text('description')->nullable();
+
+            // Geospatial
+            // Defines a PostGIS geography point for accurate Earth-surface distance calculations
+            $table->geography('location', subtype: 'point', srid: 4326);
+            $table->string('region', 100);
+
+            // Operational Details
+            $table->jsonb('operating_hours_json')->nullable(); //--{ monday: { opens: '08:00', closes: '18:00' }, ... }
+            $table->string('contact_person_name', 255)->nullable();
+            $table->string('contact_phone', 20)->nullable();
+            $table->string('contact_email', 255)->nullable();
+
+            // Handoff Capabilities (Hardware & Logistics Integration)
+            $table->boolean('qr_checkpoint_enabled')->default(true);
+            $table->boolean('thermal_imaging_enabled')->default(false);
+            $table->string('access_code', 100)->nullable(); //-- For automated gates
+            $table->boolean('parking_available')->default(true);
+
+            // Audit
             $table->timestamps();
+            $table->softDeletes();
+
+            // Query Optimization Indexes
+            // Note: idx_asset_id is automatically created by foreignUlid()
+            $table->spatialIndex('location'); // Creates the GiST index required for fast spatial queries
         });
     }
 
@@ -25,3 +58,7 @@ return new class extends Migration
         Schema::dropIfExists('handoff_locations');
     }
 };
+/*
+database/migrations/2026_05_30_072111_create_handoff_locations_table.php
+git commit -m "feat(database) : update handoff_locations table migration" -m "defined schema and column types handoff_locations - Applied many features : eg:- Future-Proofing Hardware Capabilities"
+*/
