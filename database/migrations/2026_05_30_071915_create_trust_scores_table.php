@@ -61,7 +61,3 @@ return new class extends Migration
         Schema::dropIfExists('trust_scores');
     }
 };
-/*
-database/migrations/2026_05_30_071915_create_trust_scores_table.php
-git commit -m "feat(database) : update trus_scores table migration" -m "defined schema and column types trust_scores - Applied unique constraints, explicit indexes for final_score and trust_tier and  Integrated columns for virus scanning, content
-moderation, and KMS encryption keys"

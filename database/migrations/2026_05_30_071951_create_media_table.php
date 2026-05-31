@@ -76,7 +76,3 @@ return new class extends Migration
         Schema::dropIfExists('media');
     }
 };
-/*
-database/migrations/2026_05_30_071951_create_media_table.php
-git commit -m "feat(database) : update media table migration" -m "defined schema and column types media - Applied many features : eg:- Storage Agnosticism, Cryptographic Hashing, Asynchronous Security"
-*/

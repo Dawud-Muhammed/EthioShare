@@ -66,7 +66,7 @@ return new class extends Migration
             ADD CONSTRAINT chk_punctuality CHECK (punctuality_rating IS NULL OR (punctuality_rating >= 1 AND punctuality_rating <= 5)),
             ADD CONSTRAINT chk_communication CHECK (communication_rating IS NULL OR (communication_rating >= 1 AND communication_rating <= 5)),
             ADD CONSTRAINT chk_condition CHECK (condition_upon_return_rating IS NULL OR (condition_upon_return_rating >= 1 AND condition_upon_return_rating <= 5)),
-            ADD CONSTRAINT chk_value CHECK (value_for_money_rating IS NULL OR (value_for_money_rating >= 1 AND value_for_money_rating <= 5)),
+            ADD CONSTRAINT chk_value CHECK (value_for_money_rating IS NULL OR (value_for_money_rating >= 1 AND value_for_money_rating <= 5))
         ');
     }
 
@@ -78,7 +78,3 @@ return new class extends Migration
         Schema::dropIfExists('reviews');
     }
 };
-/*
-database/migrations/2026_05_30_072017_create_reviews_table.php
-git commit -m "feat(database) : update reveiws table migration" -m "defined schema and column types reviews - Applied many features : eg:- Database-Level Validation for trust-scores"
-*/

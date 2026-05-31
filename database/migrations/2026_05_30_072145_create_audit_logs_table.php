@@ -51,8 +51,3 @@ return new class extends Migration
         Schema::dropIfExists('audit_logs');
     }
 };
-/*
-database/migrations/2026_05_30_072145_create_audit_logs_table.php
-git commit -m "feat(database) : update audit_logs table migration" -m "defined schema and column types audit_logs - Applied many features : eg:- Architectural Immutability[ history should
-never be updated or soft-deleted.]"
-*/

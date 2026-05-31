@@ -96,7 +96,7 @@ return new class extends Migration
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
+            $table->foreignUlid('user_id')->nullable()->index(); // <--- FIXED: Now matches the users ULID type
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
@@ -114,14 +114,3 @@ return new class extends Migration
         Schema::dropIfExists('sessions');
     }
 };
-            /*
-            CREATE EXTENSION IF NOT EXISTS postgis;
-                        ERROR:  extension "postgis" is not available
-                        HINT:  The extension must first be installed on the system where PostgreSQL is running. 
-
-                        SQL state: 0A000
-
-                        
-                        PS C:\Users\asus\EthioShare> git add database/migrations/0001_01_01_000000_create_users_table.php
- git commit -m "feat(database) : create users table migration" -m "defined schema and column types users - Applied unique constraints and explicit indexes for kyc_tier and location"
-            */

@@ -99,8 +99,3 @@ return new class extends Migration
         Schema::dropIfExists('assets');
     }
 };
-
-/*
-database/migrations/2026_05_30_071552_create_assets_table.php
- git commit -m "feat(database) : update assets table migration" -m "defined schema and column types assets - Applied unique constraints, explicit indexes for status, asset_type and region and expression based gist index for the asset"
-*/

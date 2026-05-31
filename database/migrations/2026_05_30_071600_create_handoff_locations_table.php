@@ -58,7 +58,3 @@ return new class extends Migration
         Schema::dropIfExists('handoff_locations');
     }
 };
-/*
-database/migrations/2026_05_30_072111_create_handoff_locations_table.php
-git commit -m "feat(database) : update handoff_locations table migration" -m "defined schema and column types handoff_locations - Applied many features : eg:- Future-Proofing Hardware Capabilities"
-*/

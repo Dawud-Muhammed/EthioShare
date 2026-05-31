@@ -70,6 +70,11 @@ return new class extends Migration
             $table->index('created_at');
 
         });
+
+        // AFTER disputes table is created, safely attach the deferred foreign key to bookings
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->foreign('dispute_id')->references('id')->on('disputes')->onDelete('set null');
+        });
     }
 
     /**
@@ -77,12 +82,11 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Drop the constraint first to avoid breaking database integrity checks during a rollback
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->dropForeign(['dispute_id']);
+        });
+
         Schema::dropIfExists('disputes');
     }
 };
-/*
-database/migrations/2026_05_30_071830_create_disputes_table.php
-git commit -m "feat(database) : update disputes table migration" -m "defined schema and column types disputes - Applied unique constraints, explicit indexes for status,Support Staff Assignment and using  Nullable Foreign Keys for Staff for Ensuring  if a customer support specialist
-leaves the organization and their account deleted then safely removes their ID from the dispute but keeps the
-historical dispute record intact."
-*/

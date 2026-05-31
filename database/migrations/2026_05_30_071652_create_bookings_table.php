@@ -60,7 +60,8 @@ return new class extends Migration
             //--review and dispute
             $table->timestamp('renter_review_submitted_at')->nullable();
             $table->timestamp('owner_review_submitted_at')->nullable();
-            $table->foreignUlid('dispute_id')->nullable()->constrained('disputes');
+            // Remove or modify the line that attaches the constraint immediately
+            $table->ulid('dispute_id')->nullable();
 
             //--audit
             $table->timestamps();
@@ -91,8 +92,3 @@ return new class extends Migration
         Schema::dropIfExists('bookings');
     }
 };
-
-/*
-database/migrations/2026_05_30_071652_create_bookings_table.php
- git commit -m "feat(database) : update bookings table migration" -m "defined schema and column types bookings - Applied unique constraints, explicit indexes for status, booking_period and region and expression based constraint index for Ensuring logical time travel is impossible"
-*/
