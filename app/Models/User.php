@@ -3,8 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Enums\AccountStatusEnum;
-use App\Enums\BusinessTypeEnum;
+use App\Shared\Enums\User\AccountStatusEnum;
+use App\Shared\Enums\User\BusinessTypeEnum;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -78,7 +78,6 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
      */    
 
 #[Casts([
-    'email_verified_at' => 'datetime',
     'password' => 'hashed',
 
     //--Security: AES-256-GCM Encryption at Rest
@@ -97,6 +96,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
     'total_trust_score' => 'decimal:2',
 
     //--dates
+    'email_verified_at' => 'datetime',
     'fayda_verified_at' => 'datetime',
     'kyc_tier_verified_at' => 'datetime',
     'trust_score_updated_at' => 'datetime',
