@@ -54,7 +54,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
     'total_trust_score',
     'trust_score_updated_at',
     'last_login_at',
-    ])]
+])]
 
     //--The attributes that should be hidden for serialization.
 #[Hidden([
@@ -65,7 +65,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
     'fayda_id',
     'phone_number',
     'business_registration_number',
-    ])]
+])]
 
     // =====================
     // CASTING PIPELINE
