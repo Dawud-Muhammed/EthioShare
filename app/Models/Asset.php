@@ -10,7 +10,6 @@ use App\Shared\Enums\Asset\DeliveryMethodEnum;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
-use Illuminate\Database\Eloquent\Attributes\Casts;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -47,39 +46,46 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 #[Hidden([
     'deleted_at'
 ])]
-#[Casts([
-//--enums
-    'asset_type' => TypeEnum::Class,
-    'condition'  => ConditionEnum::class,
-    'delivery_method'=> DeliveryMethodEnum::class,
-    'status' => StatusEnum::class,
-    'visibility' => VisibilityEnum::class,
-
-//--Decimals [financial and geospatial]
-    'hourly_rate' => 'decimal:2',
-    'daily_rate' => 'decimal:2',
-    'weekly_rate' => 'decimal:2',
-    'monthly_rate' => 'decimal:2',
-    'security_deposit' => 'decimal:2',
-    'estimated_value' => 'decimal:2',
-    'service_radius_km' => 'decimal:2',
-    'average_rating' => 'decimal:2',
-
-//--jsonb payloads
-    'specifications' => 'array',
-    'features' => 'array',    
- 
-//--dates
-    'available_from' => 'date',
-    'available_until' => 'date', 
-    'status_updated_at' => 'datetime',
-//--intgers
-    'total_reviews' => 'integer',
-    'total_bookings' => 'integer',
-    'total_rental_hours' => 'integer',    
-])]
 class Asset extends Model
 {
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array{
+        return[
+             //--enums
+        'asset_type' => TypeEnum::Class,
+        'condition'  => ConditionEnum::class,
+        'delivery_method'=> DeliveryMethodEnum::class,
+        'status' => StatusEnum::class,
+        'visibility' => VisibilityEnum::class,
+
+    //--Decimals [financial and geospatial]
+        'hourly_rate' => 'decimal:2',
+        'daily_rate' => 'decimal:2',
+        'weekly_rate' => 'decimal:2',
+        'monthly_rate' => 'decimal:2',
+        'security_deposit' => 'decimal:2',
+        'estimated_value' => 'decimal:2',
+        'service_radius_km' => 'decimal:2',
+        'average_rating' => 'decimal:2',
+
+    //--jsonb payloads
+        'specifications' => 'array',
+        'features' => 'array',    
+    
+    //--dates
+        'available_from' => 'date',
+        'available_until' => 'date', 
+        'status_updated_at' => 'datetime',
+    //--intgers
+        'total_reviews' => 'integer',
+        'total_bookings' => 'integer',
+        'total_rental_hours' => 'integer',  
+        ];
+    }
     // =====================
     // RELATIONSHIPS
     // =====================

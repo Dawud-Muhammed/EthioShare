@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
  #[Fillable([
     'asset_id',
@@ -36,22 +35,29 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
     'access_code',
     'deleted_at',
  ])]
- #[Casts([
-    //--Security: AES-256-GCM Native Encryption at Rest
-    'contact_phone' => 'encrypted',
-    'contact_email' => 'encrypted',
-    'access_code' => 'encrypted',   
-
-    //--jsonb stractured payloads
-    'operating_hours_json' > 'array',
-
-    //--boolean
-    'qr_checkpoint_enabled' => 'boolean',
-    'thermal_imaging_enabled' => 'boolean',
-    'parking_available' => 'boolean',
- ])]
 class HandoffLocation extends Model
 {
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array{
+       return [
+            //--Security: AES-256-GCM Native Encryption at Rest
+            'contact_phone' => 'encrypted',
+            'contact_email' => 'encrypted',
+            'access_code' => 'encrypted',   
+
+            //--jsonb stractured payloads
+            'operating_hours_json' > 'array',
+
+            //--boolean
+            'qr_checkpoint_enabled' => 'boolean',
+            'thermal_imaging_enabled' => 'boolean',
+            'parking_available' => 'boolean',
+       ];
+    }
     // =====================
     // RELATIONSHIPS
     // =====================   

@@ -55,7 +55,7 @@ return new class extends Migration
             $table->enum('status', [
                     'PENDING_PAYMENT', 'FUNDED', 'FUNDS_HELD', 'RELEASED', 'PARTIAL_RELEASE', 'DISPUTE_HOLD'
             ]);
-            $table->timestamp('status_udated_at')->nullable();
+            $table->timestamp('status_updated_at')->nullable();
             $table->timestamp('expires_at')->nullable(); // -- Auto-refund if not captured within X days
 
             //--audit

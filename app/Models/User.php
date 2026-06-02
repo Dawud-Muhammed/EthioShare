@@ -8,11 +8,11 @@ use App\Shared\Enums\User\BusinessTypeEnum;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
-use Illuminate\Database\Eloquent\Attributes\Casts;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -66,46 +66,43 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
     'phone_number',
     'business_registration_number',
 ])]
-
-    // =====================
-    // CASTING PIPELINE
-    // =====================
+class User extends Authenticatable implements PasskeyUser
+{
+    /** @use HasFactory<UserFactory> */
+    use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable, HasUlids, SoftDeletes;
 
     /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
-     */    
+     */
+    protected function casts(): array{
+        return[
+            'password' => 'hashed',
 
-#[Casts([
-    'password' => 'hashed',
+            //--Security: AES-256-GCM Encryption at Rest
+            'fayda_id' => 'encrypted',
+            'phone_number' => 'encrypted',
+            'business_verification_number' => 'encrypted',
 
-    //--Security: AES-256-GCM Encryption at Rest
-    'fayda_id' => 'encrypted',
-    'phone_number' => 'encrypted',
-    'business_verification_number' => 'encrypted',
+            //--JSON & Enums
+            'kyc_metadata' => 'array',
+            'business_type' => BusinessTypeEnum::class,
+            'account_status' => AccountStatusEnum::class,
 
-    //--JSON & Enums
-    'kyc_metadata' => 'array',
-    'business_type' => BusinessTypeEnum::class,
-    'account_status' => AccountStatusEnum::class,
+            //--Booleans and Decimals
+            'is_two_factor_enabled' => 'boolean',
+            'is_verified' => 'boolean',
+            'total_trust_score' => 'decimal:2',
 
-    //--Booleans and Decimals
-    'is_two_factor_enabled' => 'boolean',
-    'is_verified' => 'boolean',
-    'total_trust_score' => 'decimal:2',
-
-    //--dates
-    'email_verified_at' => 'datetime',
-    'fayda_verified_at' => 'datetime',
-    'kyc_tier_verified_at' => 'datetime',
-    'trust_score_updated_at' => 'datetime',
-    'last_login_at' => 'datetime',
-])]
-class User extends Authenticatable implements PasskeyUser
-{
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable, HasUlids, SoftDeletes;
+            //--dates
+            'email_verified_at' => 'datetime',
+            'fayda_verified_at' => 'datetime',
+            'kyc_tier_verified_at' => 'datetime',
+            'trust_score_updated_at' => 'datetime',
+            'last_login_at' => 'datetime',
+        ];
+    }
 
     // =====================
     // RELATIONSHIPS
@@ -120,8 +117,8 @@ class User extends Authenticatable implements PasskeyUser
     public function bookingAsOwner(): HasMany{
         return $this->hasMany(Booking::class, 'owner_id');
     }
-    public function trustScores():HasMany{
-        return $this->hasMany(TrustScore::class);
+    public function trustScores():HasOne{
+        return $this->hasone(TrustScore::class);
     }
     public function reviewsAsReviwer():HasMany{
         return $this->hasMany(Review::class, 'reviwer_id');
