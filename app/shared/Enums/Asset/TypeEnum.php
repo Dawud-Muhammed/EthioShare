@@ -1,6 +1,6 @@
 <?php
 namespace App\Shared\Enums\Asset;
-enum AssetTypeEnum: string{
+enum TypeEnum: string{
     case MACHINERY   = 'MACHINERY';
     case VEHICLE   = 'VEHICLE';
     case EQUIPMENT   = 'EQUIPMENT';

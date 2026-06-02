@@ -1,6 +1,6 @@
 <?php 
 namespace App\Shared\Enums\Asset;
-enum AssetConditionEnum: string{
+enum ConditionEnum: string{
 case NEW = 'NEW';
 case LIKE_NEW = 'LIKE_NEW';
 case GOOD = 'GOOD';

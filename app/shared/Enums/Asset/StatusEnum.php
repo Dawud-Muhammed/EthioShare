@@ -1,7 +1,7 @@
 <?php 
 namespace App\Shared\Enums\Asset;
 
-enum AssetStatusEnum: string{
+enum StatusEnum: string{
    case DRAFT = 'DRAFT';
    case ACTIVE = 'ACTIVE';
    case RENTED = 'RENTED';

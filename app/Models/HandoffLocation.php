@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
  #[Fillable([
@@ -54,11 +55,8 @@ class HandoffLocation extends Model
     // =====================
     // RELATIONSHIPS
     // =====================   
-    public function users(): BelongsToMany{
-        return $this->belongsToMany(User::class, 'owner_id');
-    } 
-    public function assets(): BelongsToMany{
-        return $this->belongsToMany(Asset::class, 'asset_id');
+    public function assets(): BelongsTo{
+        return $this->belongsTo(Asset::class, 'asset_id');
     }
 
     // =====================

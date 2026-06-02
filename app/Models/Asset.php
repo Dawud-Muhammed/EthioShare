@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Casts;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -83,8 +83,8 @@ class Asset extends Model
     // =====================
     // RELATIONSHIPS
     // =====================
-    public function owner(): BelongsToMany{
-        return $this->belongsToMany(User::class,'owner_id');
+    public function owner(): BelongsTo{
+        return $this->belongsTo(User::class,'owner_id');
     }
     public function bookings(): HasMany{
         return $this->hasMany(Booking::class,'asset_id');
