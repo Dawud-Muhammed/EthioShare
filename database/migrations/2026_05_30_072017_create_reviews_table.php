@@ -22,7 +22,7 @@ return new class extends Migration
             $table->ulidMorphs('reviewable');
 
             //--reviewer and context
-            $table->foreignUlid('reviwer_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignUlid('reviewer_id')->constrained('users')->cascadeOnDelete();
             $table->foreignUlid('booking_id')->nullable()->constrained('bookings'); //--Assuming nullable so a review isn't strictly destroyed if a booking record is purged
 
             //--rating and feedback
