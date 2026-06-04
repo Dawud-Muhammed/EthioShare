@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Shared\Enums\User\AccountStatusEnum;
+use App\Shared\Enums\User\BusinessTypeEnum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -24,17 +26,36 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $firstName = fake()->firstName();
+        $lastName = fake()->lastName();
+        
         return [
-            'name' => fake()->name(),
+            'first_name' => $firstName,
+            'last_name' => $lastName,
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
+            'phone_number' => fake()->phoneNumber(),
             'password' => static::$password ??= Hash::make('password'),
+            'fayda_id' => fake()->unique()->numerify('############'),
+            'fayda_verified_at' => now(),
+            'kyc_tier' => fake()->numberBetween(1, 3),
+            'kyc_tier_verified_at' => now(),
+            'kyc_metadata' => [
+                'verified_documents' => ['national_id', 'selfie'],
+                'verification_date' => now()->toDateString(),
+            ],
+            'business_type' => fake()->randomElement([
+                BusinessTypeEnum::INDIVIDUAL,
+                BusinessTypeEnum::SME,
+                BusinessTypeEnum::CORPORATIVE,
+            ]),
+            'account_status' => AccountStatusEnum::ACTIVE,
+            'is_verified' => true,
+            'is_two_factor_enabled' => false,
+            'total_trust_score' => fake()->randomFloat(2, 0, 100),
+            'trust_score_updated_at' => now(),
+            'last_login_at' => now(),
             'remember_token' => Str::random(10),
-            /* @chisel-2fa */
-            'two_factor_secret' => null,
-            'two_factor_recovery_codes' => null,
-            'two_factor_confirmed_at' => null,
-            /* @end-chisel-2fa */
         ];
     }
 
@@ -45,6 +66,23 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+            'is_verified' => false,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is a business entity.
+     */
+    public function business(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'business_name' => fake()->company(),
+            'business_registration_number' => fake()->unique()->bothify('BR-##########'),
+            'business_type' => fake()->randomElement([
+                BusinessTypeEnum::SME,
+                BusinessTypeEnum::CORPORATIVE,
+                BusinessTypeEnum::COOPERATIVE,
+            ]),
         ]);
     }
 
@@ -53,12 +91,11 @@ class UserFactory extends Factory
      */
     public function withTwoFactor(): static
     {
-        /* @chisel-2fa */
         return $this->state(fn (array $attributes) => [
+            'is_two_factor_enabled' => true,
             'two_factor_secret' => encrypt('secret'),
             'two_factor_recovery_codes' => encrypt(json_encode(['recovery-code-1'])),
             'two_factor_confirmed_at' => now(),
         ]);
-        /* @end-chisel-2fa */
     }
 }

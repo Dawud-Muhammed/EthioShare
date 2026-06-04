@@ -18,12 +18,12 @@ return new class extends Migration
             //--authentication
             $table->string('email', 255)->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('phone_number', 20)->unique();
+            $table->string('phone_number', 255)->unique();
             $table->string('password', 255);
             $table->rememberToken();
             
             //--fayda or national id intergration
-            $table->string('fayda_id', 50)->unique()->nullable();
+            $table->string('fayda_id', 255)->unique()->nullable();
             $table->timestamp('fayda_verified_at')->nullable();
               // 1 = Phone
               // 2 = Fayda
