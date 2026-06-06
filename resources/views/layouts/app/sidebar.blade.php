@@ -10,10 +10,26 @@
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
 
-            <flux:sidebar.nav>
+           <flux:sidebar.nav>
                 <flux:sidebar.group :heading="__('Platform')" class="grid">
                     <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
-                        {{ __('Dashboard') }}
+                        {{ __('Overview') }}
+                    </flux:sidebar.item>
+                    
+                    <flux:sidebar.item icon="calendar" :href="route('dashboard')" :current="request()->routeIs('bookings')" wire:navigate>
+                        {{ __('My Bookings') }}
+                    </flux:sidebar.item>
+                    
+                    <flux:sidebar.item icon="archive-box" :href="route('asset')" :current="request()->routeIs('asset')" wire:navigate>
+                        {{ __('My Assets') }}
+                    </flux:sidebar.item>
+                    
+                    <flux:sidebar.item icon="arrows-right-left" :href="route('dashboard')" :current="request()->routeIs('transactions')" wire:navigate>
+                        {{ __('Transactions') }}
+                    </flux:sidebar.item>
+                    
+                    <flux:sidebar.item icon="scale" :href="route('dashboard')" :current="request()->routeIs('disputes')" wire:navigate>
+                        {{ __('Disputes') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
             </flux:sidebar.nav>
@@ -21,13 +37,14 @@
             <flux:spacer />
 
             <flux:sidebar.nav>
-                <flux:sidebar.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                    {{ __('Repository') }}
-                </flux:sidebar.item>
-
-                <flux:sidebar.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
-                    {{ __('Documentation') }}
-                </flux:sidebar.item>
+                <flux:sidebar.group :heading="__('Community')" class="grid mt-4">
+                    <flux:sidebar.item icon="star" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                        {{ __('Reviews') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="heart" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                        {{ __('Favorites') }}
+                    </flux:sidebar.item>
+                </flux:sidebar.group>
             </flux:sidebar.nav>
 
             <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />

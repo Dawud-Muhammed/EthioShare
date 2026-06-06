@@ -1,11 +1,20 @@
 <?php
 
+use App\Livewire\Dashboard;
+use App\Livewire\Asset;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')->name('home');
+Route::view('/', 'home')->name('home');
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
-});
+  
+
+Route::get('/dashboard', Dashboard::class)
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+Route::get('asset', Asset::class)->name('asset');
+    });
 
 require __DIR__.'/settings.php';

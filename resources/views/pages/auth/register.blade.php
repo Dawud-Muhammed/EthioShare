@@ -5,61 +5,76 @@
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
-        <form method="POST" action="{{ route('register.store') }}" class="flex flex-col gap-6">
-            @csrf
-            <!-- Name -->
-            <flux:input
-                name="name"
-                :label="__('Name')"
-                :value="old('name')"
-                type="text"
-                required
-                autofocus
-                autocomplete="name"
-                :placeholder="__('Full name')"
-            />
+<form method="POST" action="{{ route('register.store') }}" class="flex flex-col gap-6">
+    @csrf
+    
+    <flux:input
+        name="first_name"
+        :label="__('First Name')"
+        :value="old('first_name')"
+        type="text"
+        required
+        autofocus
+        autocomplete="given-name"
+        :placeholder="__('First name')"
+    />
 
-            <!-- Email Address -->
-            <flux:input
-                name="email"
-                :label="__('Email address')"
-                :value="old('email')"
-                type="email"
-                required
-                autocomplete="email"
-                placeholder="email@example.com"
-            />
+    <flux:input
+        name="last_name"
+        :label="__('Last Name')"
+        :value="old('last_name')"
+        type="text"
+        required
+        autocomplete="family-name"
+        :placeholder="__('Last name')"
+    />
 
-            <!-- Password -->
-            <flux:input
-                name="password"
-                :label="__('Password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                :placeholder="__('Password')"
-                passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
-                viewable
-            />
+    <flux:input
+        name="email"
+        :label="__('Email address')"
+        :value="old('email')"
+        type="email"
+        required
+        autocomplete="email"
+        placeholder="email@example.com"
+    />
 
-            <!-- Confirm Password -->
-            <flux:input
-                name="password_confirmation"
-                :label="__('Confirm password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                :placeholder="__('Confirm password')"
-                passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
-                viewable
-            />
+    <flux:input
+        name="phone_number"
+        :label="__('Phone Number')"
+        :value="old('phone_number')"
+        type="tel"
+        required
+        autocomplete="tel"
+        :placeholder="__('+2519/7 xxxxxxxx OR 09/7 xxxxxxxx')"
+    />
 
-            <div class="flex items-center justify-end">
-                <flux:button type="submit" variant="primary" class="w-full" data-test="register-user-button">
-                    {{ __('Create account') }}
-                </flux:button>
-            </div>
-        </form>
+    <flux:input
+        name="password"
+        :label="__('Password')"
+        type="password"
+        required
+        autocomplete="new-password"
+        :placeholder="__('Password')"
+        viewable
+    />
+
+    <flux:input
+        name="password_confirmation"
+        :label="__('Confirm password')"
+        type="password"
+        required
+        autocomplete="new-password"
+        :placeholder="__('Confirm password')"
+        viewable
+    />
+
+    <div class="flex items-center justify-end">
+        <flux:button type="submit" variant="primary" class="w-full" data-test="register-user-button">
+            {{ __('Create account') }}
+        </flux:button>
+    </div>
+</form>
 
         <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
             <span>{{ __('Already have an account?') }}</span>
