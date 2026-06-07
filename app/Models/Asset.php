@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Shared\Enums\Asset\StatusEnum;
-use App\Shared\Enums\Asset\VisibilityEnum;
-use App\Shared\Enums\Asset\TypeEnum;
-use App\Shared\Enums\Asset\ConditionEnum;
-use App\Shared\Enums\Asset\DeliveryMethodEnum;
+use App\Domains\Shared\Enums\Asset\StatusEnum;
+use App\Domains\Shared\Enums\Asset\VisibilityEnum;
+use App\Domains\Shared\Enums\Asset\TypeEnum;
+use App\Domains\Shared\Enums\Asset\ConditionEnum;
+use App\Domains\Shared\Enums\Asset\DeliveryMethodEnum;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -31,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
     'available_until',
     'location',
     'region',
+    'address_line',
     'service_radius_km',
     'delivery_method',
     'specifications',
