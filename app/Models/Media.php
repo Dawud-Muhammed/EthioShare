@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use App\Shared\Enums\Media\MediaType;
-use App\Shared\Enums\Media\MediaPurpose;
-use App\Shared\Enums\Media\VirusScanStatus;
-use App\Shared\Enums\Media\ContentModerationStatus;
+use App\Domains\Shared\Enums\Media\MediaType;
+use App\Domains\Shared\Enums\Media\MediaPurpose;
+use App\Domains\Shared\Enums\Media\VirusScanStatus;
+use App\Domains\Shared\Enums\Media\ContentModerationStatus;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;

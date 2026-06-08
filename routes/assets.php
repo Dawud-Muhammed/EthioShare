@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\V1\Assets\AssetController;
+use App\Http\Controllers\API\V1\Assets\MediaController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')
@@ -9,6 +10,16 @@ Route::prefix('v1')
     // a valid Sanctum token in the Authorization header."
     // If no token → 401 Unauthorized, controller never runs.
     ->group(function () {
+
+        // Owner dashboard — must come BEFORE /{asset} routes
+        Route::get('/my/assets', [AssetController::class, 'myAssets']);
+        // ↑ Why must this come BEFORE /{asset}?
+        // Laravel matches routes top to bottom.
+        // If /{asset} comes first, Laravel tries to find an Asset
+        // with ID "my" — which doesn't exist → 404.
+        // By putting /my/assets first, Laravel matches it correctly
+        // before even looking at /{asset}.
+        // Route ORDER matters. This is a very common Laravel bug.
 
         Route::prefix('assets')->group(function () {
 
@@ -25,5 +36,30 @@ Route::prefix('v1')
             // Route::get('/{id}', [AssetController::class, 'show']);    // view one asset
             // Route::put('/{id}', [AssetController::class, 'update']);  // update asset
             // Route::delete('/{id}', [AssetController::class, 'destroy']); // delete asset
+
+            Route::get('/{asset}', [AssetController::class, 'show']);
+            // ↑ GET /api/v1/assets/{asset}
+            // GET = read only. No body. No side effects.
+            // The auth:sanctum middleware is already on the group,
+            // so this requires a valid token.
+            //
+            // TODO: Phase 2 — make this public for browsing guests.
+            // Remove from the sanctum group and create a separate public group:
+            // Route::middleware('api')->get('/{asset}', ...)
+
+            Route::post('/{asset}/media', [MediaController::class, 'store']);
+            // ↑ POST /api/v1/assets/{asset}/media
+            // {asset} is the ULID of the asset.
+            // Laravel reads the Asset model automatically via Route Model Binding.
+            // Add the import at the top of the file:
+            // use App\Http\Controllers\API\V1\Assets\MediaController;
+
+            Route::patch('/{asset}/publish', [AssetController::class, 'publish']);
+            // ↑ PATCH not PUT.
+            // PUT   = replace the entire resource with new data
+            // PATCH = change one specific thing about the resource
+            // We are only changing the status field. PATCH is semantically correct.
+            // URL: PATCH /api/v1/assets/{asset}/publish
+
         });
     });

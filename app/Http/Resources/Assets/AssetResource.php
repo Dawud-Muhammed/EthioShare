@@ -5,6 +5,7 @@ namespace App\Http\Resources\Assets;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Domains\Shared\Enums\Media\MediaPurpose;
 
 class AssetResource extends JsonResource{
     public function toArray(Request $request): array{
@@ -75,6 +76,15 @@ class AssetResource extends JsonResource{
             // ↑ ISO 8601 format: "2026-06-06T14:30:00+00:00"
             // This is the international standard. Frontends and mobile apps expect this.
             // Never return raw Carbon objects — they serialize weirdly.
+
+            'photos' => $this->whenLoaded('media', function(){
+                return $this->media->map(fn ($media) => [
+                    'id'         => $media->id,
+                    'url'        => $media->public_url,
+                    'is_primary' => $media->is_primary,
+                    'file_name'  => $media->file_name,
+                ]);
+            }, []),
         ];
     }
 }
