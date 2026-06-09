@@ -12,24 +12,46 @@
 
            <flux:sidebar.nav>
                 <flux:sidebar.group :heading="__('Platform')" class="grid">
-                    <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                    <flux:sidebar.item icon="home"
+                        :href="route('dashboard')"
+                        :current="request()->routeIs('dashboard')"
+                        wire:navigate>
                         {{ __('Overview') }}
                     </flux:sidebar.item>
-                    
-                    <flux:sidebar.item icon="calendar" :href="route('dashboard')" :current="request()->routeIs('bookings')" wire:navigate>
-                        {{ __('My Bookings') }}
-                    </flux:sidebar.item>
-                    
-                    <flux:sidebar.item icon="archive-box" :href="route('asset')" :current="request()->routeIs('asset')" wire:navigate>
+
+                    <flux:sidebar.item icon="archive-box"
+                        :href="route('assets.index')"
+                        :current="request()->routeIs('assets.*')"
+                        wire:navigate>
                         {{ __('My Assets') }}
                     </flux:sidebar.item>
-                    
-                    <flux:sidebar.item icon="arrows-right-left" :href="route('dashboard')" :current="request()->routeIs('transactions')" wire:navigate>
+
+                    <flux:sidebar.item icon="calendar"
+                        :href="route('bookings.index')"
+                        :current="request()->routeIs('bookings.*')"
+                        wire:navigate>
+                        {{ __('My Bookings') }}
+                    </flux:sidebar.item>
+
+                    <flux:sidebar.item icon="arrows-right-left"
+                        :href="route('transactions.index')"
+                        :current="request()->routeIs('transactions.*')"
+                        wire:navigate>
                         {{ __('Transactions') }}
                     </flux:sidebar.item>
-                    
-                    <flux:sidebar.item icon="scale" :href="route('dashboard')" :current="request()->routeIs('disputes')" wire:navigate>
+
+                    <flux:sidebar.item icon="scale"
+                        :href="route('disputes.index')"
+                        :current="request()->routeIs('disputes.*')"
+                        wire:navigate>
                         {{ __('Disputes') }}
+                    </flux:sidebar.item>
+
+                    <flux:sidebar.item icon="star"
+                        :href="route('reviews.index')"
+                        :current="request()->routeIs('reviews.*')"
+                        wire:navigate>
+                        {{ __('Reviews') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
             </flux:sidebar.nav>
