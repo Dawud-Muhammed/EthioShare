@@ -49,8 +49,7 @@ class CreateAssetRequest extends FormRequest
             'address_line' => ['required', 'string', 'max:255'],
             // TODO: Phase 2 - geocode this address into PostGIS POINT for location column
 
-            'delivery_method' => ['nullable', 'string', 'in:' . implode(',', DeliveryMethodEnum::values()),
-            ],
+            'delivery_method' => ['nullable', 'string', 'in:' . implode(',', DeliveryMethodEnum::values())],
             // TODO: Phase 2 - Phase 2 this becomes required before publishing.
 
             'service_radius_km' => ['nullable', 'numeric', 'min:1', 'max:500'],

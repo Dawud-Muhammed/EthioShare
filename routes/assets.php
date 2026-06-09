@@ -60,6 +60,22 @@ Route::prefix('v1')
             // PATCH = change one specific thing about the resource
             // We are only changing the status field. PATCH is semantically correct.
             // URL: PATCH /api/v1/assets/{asset}/publish
-
+           Route::put('/{asset}', [AssetController::class, 'update']);
+            // ↑ PUT /api/v1/assets/{asset}
+            // Technically PATCH is more correct for partial updates.
+            // But PUT is more universally understood by frontend developers.
+            // Both work identically in Laravel.
+            // TODO: Phase 2 — consider supporting both:
+            // Route::match(['put', 'patch'], '/{asset}', ...)
+          Route::patch('/{asset}/status', [AssetController::class, 'updateStatus']);
+            // ↑ PATCH /api/v1/assets/{asset}/status
+            // PATCH because we are changing one specific aspect of the asset.
+            // The URL says exactly what is changing: the status.
+            // Clean, readable, self-documenting API design.
+          Route::get('/', [AssetController::class, 'index']);
+            // ↑ GET /api/v1/assets
+            // This sits INSIDE the auth:sanctum middleware group for now.
+            // TODO: Phase 2 — move to a public route group (no auth required).
+            // For now, browsing requires a token. Acceptable for Phase 1.
         });
     });
