@@ -40,7 +40,7 @@ return new class extends Migration
             $table->date('available_until')->nullable();
 
             //geospatial and logistics
-            $table->geography('location', subtype: 'point', srid: 4326);
+            $table->geography('location', subtype: 'point', srid: 4326)->nullable();
             $table->string('region', 100);
             $table->decimal('service_radius_km', 5, 2)->default(50.00);
             $table->enum('delivery_method', [

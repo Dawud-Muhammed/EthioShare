@@ -8,7 +8,7 @@ use App\Models\Asset;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 class UpdateAssetAction{
-    public function execute(array $data, Asset $asset, User $owner): Asset{
+    public function execute(array $data, Asset $asset, User $owner, ?array $newPhotos = null): Asset{
         $this->ensureOwnership($asset, $owner);
         $this->ensureIsEditable($asset);
 
@@ -17,6 +17,19 @@ class UpdateAssetAction{
             // TODO: Phase 2 — dispatch AssetUpdated event:
             // event(new \App\Domains\Assets\Events\AssetUpdated($asset, $data));
             // Listeners will: re-index search, notify active bookers of price change.
+
+            // Handle new photos if any were uploaded
+            if (!empty($newPhotos)) {
+                $storeAction = app(StoreAssetMediaAction::class);
+                foreach ($newPhotos as $photo) {
+                    $storeAction->execute(
+                        files: [$photo],
+                        asset: $asset,
+                        owner: $asset->owner,
+                        primaryIndex: -1
+                    );
+                }
+            }
             
             return $asset->fresh();
         });

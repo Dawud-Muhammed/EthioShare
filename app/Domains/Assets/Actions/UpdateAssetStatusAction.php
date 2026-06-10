@@ -52,6 +52,7 @@ class UpdateAssetStatusAction{
             //     'DELISTED' => event(new AssetDelisted($asset, $reason)),
             // }
             // Listeners: notify active bookers, remove from search index.
+            return $asset->fresh();
         });
     }
 

@@ -31,7 +31,7 @@ class StoreMediaRequest extends FormRequest{
             'photos.required'      => 'Please select at least one photo to upload.',
             'photos.max'           => 'You can upload a maximum of 10 photos at once.',
             'photos.*.image'       => 'Each file must be an image.',
-            'photos.*.mimes'       => 'Photos must be JPEG, PNG, or WebP format.',
+            'photos.*.mimes'       => 'Photos must be JPG, JPEG, PNG, or WebP format.',
             'photos.*.max'         => 'Each photo must be under 10MB.',
             'primary_index.max'    => 'Primary index cannot exceed the number of photos.',
         ];

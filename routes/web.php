@@ -1,38 +1,33 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use \App\Livewire\Assets\Browse;
-use \App\Livewire\Assets\Show;
-use \App\Livewire\Assets\Index;
-use \App\Livewire\Assets\Create;
-use \App\Livewire\Assets\Edit;
+use App\Livewire\Dashboard;
+use App\Livewire\Assets\Browse;
+use App\Livewire\Assets\Show;
+use App\Livewire\Assets\Index;
+use App\Livewire\Assets\Create;
+use App\Livewire\Assets\Edit;
 
 // =====================================================
 // PUBLIC MARKETPLACE ROUTES
 // No auth required — anyone can browse
 // =====================================================
-Route::view('/', 'layouts/marketplace')->name('home');
+Route::get('/', Browse::class)
+    ->name('home');
 Route::get('/assets', Browse::class)
     ->name('browse.assets');
-// ↑ This connects URL /assets directly to a Livewire component class.
-// Laravel 13 supports this natively — no controller needed.
-// When someone visits /assets, Laravel instantiates Browse::class
-// and renders its view automatically.
-
-Route::get('/assets/{asset}', Show::class)
-    ->name('assets.show');
-
 
 // =====================================================
 // AUTHENTICATED OWNER ROUTES
+// MOVED BEFORE the wildcard route to prevent conflicts
 // =====================================================
+
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-
+    Route::get('/dashboard', Dashboard::class)
+    ->name('dashboard');
     // Asset management
     Route::get('/my/assets', Index::class)
         ->name('assets.index');
@@ -64,3 +59,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('reviews.index');
 
 });
+
+// =====================================================
+// PUBLIC WILDCARD ROUTE — must come LAST
+// =====================================================
+Route::get('/assets/{asset}', Show::class)
+    ->name('assets.show');
+
+require __DIR__.'/settings.php';

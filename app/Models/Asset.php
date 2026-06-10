@@ -10,6 +10,7 @@ use App\Domains\Shared\Enums\Asset\DeliveryMethodEnum;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -49,6 +50,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 ])]
 class Asset extends Model
 {
+    use HasUlids;
     /**
      * Get the attributes that should be cast.
      *

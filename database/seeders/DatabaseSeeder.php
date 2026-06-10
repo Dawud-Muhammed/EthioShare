@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Domains\Shared\Enums\User\AccountStatusEnum;
 use App\Models\User;
-use App\Shared\Enums\User\AccountStatusEnum;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -20,9 +20,9 @@ class DatabaseSeeder extends Seeder
         // ADMIN / TEST USER
         // =====================
         $adminUser = User::factory()->create([
-            'email' => 'admin@ethioshare.test',
+            'email' => 'dawud2147@gmail.com',
             'phone_number' => '0970706318',
-            'password' => 'password',
+            'password' => 'XT97qcHw4mSM3rw',
             'fayda_id' => '810583097316',
             'first_name' => 'Admin',
             'last_name' => 'User',

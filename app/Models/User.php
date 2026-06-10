@@ -3,8 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Shared\Enums\User\AccountStatusEnum;
-use App\Shared\Enums\User\BusinessTypeEnum;
+use App\Domains\Shared\Enums\User\AccountStatusEnum;
+use App\Domains\Shared\Enums\User\BusinessTypeEnum;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;

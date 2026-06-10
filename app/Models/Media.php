@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 // =====================
 // CONFIGURATION
@@ -106,11 +107,14 @@ class Media extends Model
      * Resolve the public-facing URL for the media asset.
      * Prioritizes CDN for bandwidth optimization.
      */
+
     protected function publicUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->cdn_url ?? config("filesystems.disks.{$this->disk_name}.url") . '/' . $this->disk_path
-        )->shouldCache();
+            get: fn () =>
+                $this->cdn_url
+                ?? Storage::disk($this->disk_name)->url($this->disk_path)
+        );
     }
 
     /**

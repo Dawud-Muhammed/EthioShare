@@ -36,7 +36,7 @@ class StoreAssetMediaAction{
                     'file_hash'     => hash_file('sha256', $file->getRealPath()),
                     // TODO: Phase 2 — check for duplicate hash before storing.
 
-                    'disk_name'     => 'local',
+                    'disk_name'     => 'public',
                     // ↑ Hardcoded for Phase 1. Local disk.
                     // TODO: Phase 2 — use config('filesystems.default')
                     // So switching to S3 only requires changing one config value.
@@ -84,14 +84,14 @@ class StoreAssetMediaAction{
         // Why per-asset folders? When you delete an asset, you can delete the entire folder.
         // Also makes S3 migration easier — one folder per asset.
 
-        return Storage::disk('local')->putFileAs($directory, $file, $fileName);
+        return Storage::disk('public')->putFileAs($directory, $file, $fileName);
     }
-    private function demoteExistingPrimary(Asset $asset, int $primaryIndex, int $uploadCount):void{
-        if($primaryIndex < $uploadCount){
+    private function demoteExistingPrimary(Asset $asset, int $primaryIndex, int $uploadCount): void{
+        if ($primaryIndex >= 0 && $primaryIndex < $uploadCount) {
             $asset->media()
-                  ->where('purpose', MediaPurpose::ASSET_PHOTO)
-                  ->where('is_primary', true)
-                  ->update(['is_primary' => false]);
+                ->where('purpose', MediaPurpose::ASSET_PHOTO)
+                ->where('is_primary', true)
+                ->update(['is_primary' => false]);
         }
     }
 }

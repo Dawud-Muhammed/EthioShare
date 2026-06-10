@@ -28,7 +28,7 @@ class AssetController extends Controller
         private readonly UpdateAssetStatusAction $updateAssetStatusAction,
     ) {}
 
-    public function store(CreateAssetRequest $request): JsonResponse  // ← capital J
+    public function store(CreateAssetRequest $request): JsonResponse
     {
         $asset = $this->createAssetAction->execute(
             data:  $request->validated(),

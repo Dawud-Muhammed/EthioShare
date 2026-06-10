@@ -6,7 +6,7 @@
     <body class="min-h-screen bg-white dark:bg-zinc-900">
 
         {{-- ===================== TOP NAVBAR ===================== --}}
-        <nav class="sticky top-0 z-50 border-b border-zinc-200 bg-white/80 backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-900/80">
+        <nav class="sticky top-0 z-50 border-b border-zinc-200 bg-zinc-50 backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-900">
 
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 

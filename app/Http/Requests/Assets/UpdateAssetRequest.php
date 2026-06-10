@@ -51,6 +51,12 @@ class UpdateAssetRequest extends FormRequest{
             'features*' => ['string', 'max:50'],
 
             'visibility' => ['sometimes','nullable', 'string', 'in:' . implode(',',VisibilityEnum::values())],
+
+            'photos'   => ['sometimes', 'array', 'min:1', 'max:10'],
+            // ↑ 'photos' is the field name the frontend sends.
+
+            'photos.*' => ['sometimes', 'file', 'image', 'mimes:png,jpg,webp,jpeg', 'max:10240'],
+            'primary_index' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:9'],
         ];
     }
 
@@ -64,6 +70,12 @@ class UpdateAssetRequest extends FormRequest{
             'asset_type.in'        => 'Invalid asset type. Accepted: ' . implode(', ', TypeEnum::values()),
             'condition.in'         => 'Invalid condition. Accepted: ' . implode(', ', ConditionEnum::values()),
             'delivery_method.in'   => 'Invalid delivery method. Accepted: ' . implode(', ', DeliveryMethodEnum::values()),
+
+            'photos.max'           => 'You can upload a maximum of 10 photos at once.',
+            'photos.*.image'       => 'Each file must be an image.',
+            'photos.*.mimes'       => 'Photos must be JPG, JPEG, PNG, or WebP format.',
+            'photos.*.max'         => 'Each photo must be under 10MB.',
+            'primary_index.max'    => 'Primary index cannot exceed the number of photos.',
         ];
     }
 }
