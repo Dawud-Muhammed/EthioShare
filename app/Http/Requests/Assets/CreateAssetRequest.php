@@ -76,12 +76,12 @@ class CreateAssetRequest extends FormRequest
 
     public function messages(): array
     {
-return [
+    return [
             'title.required'            => 'Please give your asset a title.',
             'title.min'                 => 'Title must be at least 5 characters.',
             'title.max'                 => 'Title cannot exceed 255 characters.',
             'asset_type.required'       => 'Asset type is required.',
-            'asset_type.in'             => 'Invalid asset type. Accepted: ' . implode(', ', AssetTypeEnum::values()),
+            'asset_type.in'             => 'Invalid asset type. Accepted: ' . implode(', ', TypeEnum::values()),
             'condition.required'        => 'Condition is required.',
             'condition.in'              => 'Invalid condition. Accepted: ' . implode(', ', ConditionEnum::values()),
             'hourly_rate.required'      => 'Hourly rate is required.',

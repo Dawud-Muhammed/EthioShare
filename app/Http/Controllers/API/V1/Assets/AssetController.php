@@ -17,7 +17,7 @@ use App\Http\Requests\Assets\UpdateAssetRequest;
 use App\Http\Requests\Assets\UpdateAssetStatusRequest;
 use App\Http\Resources\Assets\AssetResource;
 use App\Models\Asset;
-use Illuminate\Http\JsonResponse;   // ← correct import, capital J
+use Illuminate\Http\JsonResponse; 
 
 class AssetController extends Controller
 {
@@ -83,7 +83,7 @@ class AssetController extends Controller
     public function myAssets(): JsonResponse{
         $owner = request()->user();
         $status = request()->query('status');
-        $perPage = (int) request()->query('per_Page', 15);
+        $perPage = (int) request()->query('per_Page', '15');
         $perPage = min($perPage, 50);
 
         $assets = Asset::query()->where('owner_id', $owner->id)

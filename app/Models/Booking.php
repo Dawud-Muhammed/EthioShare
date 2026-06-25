@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use App\Shared\Enums\Booking\BookingStatusEnum;
-use App\Shared\Enums\Booking\EscrowStatusEnum;
-use App\Shared\Enums\Booking\HandoffMethodEnum;
-use App\Shared\Enums\Booking\PaymentStatusEnum;
+use App\Domains\Shared\Enums\Booking\BookingStatusEnum;
+use App\Domains\Shared\Enums\Booking\EscrowStatusEnum;
+use App\Domains\Shared\Enums\Booking\HandoffMethodEnum;
+use App\Domains\Shared\Enums\Booking\PaymentStatusEnum;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;

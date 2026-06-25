@@ -10,42 +10,29 @@ use App\Livewire\Assets\Edit;
 
 // =====================================================
 // PUBLIC MARKETPLACE ROUTES
-// No auth required — anyone can browse
 // =====================================================
-Route::get('/', Browse::class)
-    ->name('home');
-Route::get('/assets', Browse::class)
-    ->name('browse.assets');
+Route::get('/', Browse::class)->name('home');
+Route::get('/assets', Browse::class)->name('browse.assets');
 
 // =====================================================
-// AUTHENTICATED OWNER ROUTES
-// MOVED BEFORE the wildcard route to prevent conflicts
+// AUTHENTICATED ROUTES
 // =====================================================
-
-
-
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    Route::get('/dashboard', Dashboard::class)
-    ->name('dashboard');
+    Route::get('/dashboard', Dashboard::class)->name('dashboard');
+
     // Asset management
-    Route::get('/my/assets', Index::class)
-        ->name('assets.index');
+    Route::get('/my/assets', Index::class)->name('assets.index');
+    Route::get('/assets/create', Create::class)->name('assets.create');
+    Route::get('/assets/{asset}/edit', Edit::class)->name('assets.edit');
 
-    Route::get('/assets/create', Create::class)
-        ->name('assets.create');
-
-    Route::get('/assets/{asset}/edit', Edit::class)
-        ->name('assets.edit');
-
-    // =====================================================
-    // PLACEHOLDER ROUTES — prevent sidebar link errors
-    // Replace each one when you build that domain's frontend
-    // =====================================================
+    // Booking frontend — placeholder until BookingIndex Livewire component is built
+    // TODO: replace with Route::get('/bookings', BookingIndex::class)->name('bookings.index');
     Route::get('/bookings', function () {
         return view('dashboard');
     })->name('bookings.index');
 
+    // These placeholders stay until each frontend module is built
     Route::get('/transactions', function () {
         return view('dashboard');
     })->name('transactions.index');
@@ -57,13 +44,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/reviews', function () {
         return view('dashboard');
     })->name('reviews.index');
-
 });
 
 // =====================================================
-// PUBLIC WILDCARD ROUTE — must come LAST
+// PUBLIC WILDCARD — must come LAST
 // =====================================================
-Route::get('/assets/{asset}', Show::class)
-    ->name('assets.show');
+Route::get('/assets/{asset}', Show::class)->name('assets.show');
 
 require __DIR__.'/settings.php';
