@@ -42,7 +42,7 @@ class CreateBookingAction{
                         ->where('booking_status', '!=', BookingStatusEnum::CANCELLED)
                         ->where(function ($query) use ($startDatetime, $endDatetime){
                                     //The new start falls INSIDE an existing booking's window
-                            $query->whereBetween('start_dattime', [$startDatetime, $endDatetime])
+                            $query->whereBetween('start_datetime', [$startDatetime, $endDatetime])
                                     //The new end falls INSIDE an existing booking's window
                                     ->orWhereBetween('end_datetime', [$startDatetime, $endDatetime])
                                     // The new booking completely CONTAINS an existing booking

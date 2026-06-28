@@ -17,9 +17,9 @@ class CompleteHandoffAction{
             );
         }
 
-        if($booking->booking_status !== BookingStatusEnum::CONFIRMED){
+        if($booking->booking_status !== BookingStatusEnum::RENTER_ARRIVED){
             throw new InvalidStateTransitionException(
-                'the booking must be confirmed before the handoff'
+                'the renter must be arrived before the handoff'
             );
         }
 

@@ -7,9 +7,14 @@ use App\Livewire\Assets\Show;
 use App\Livewire\Assets\Index;
 use App\Livewire\Assets\Create;
 use App\Livewire\Assets\Edit;
+use App\Livewire\Bookings\BookingShow;
+use App\Livewire\Bookings\BookingIndex;
+use App\Livewire\Bookings\BookingCreate;
+
 
 // =====================================================
 // PUBLIC MARKETPLACE ROUTES
+// No auth required — anyone can browse
 // =====================================================
 Route::get('/', Browse::class)->name('home');
 Route::get('/assets', Browse::class)->name('browse.assets');
@@ -26,13 +31,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/assets/create', Create::class)->name('assets.create');
     Route::get('/assets/{asset}/edit', Edit::class)->name('assets.edit');
 
-    // Booking frontend — placeholder until BookingIndex Livewire component is built
-    // TODO: replace with Route::get('/bookings', BookingIndex::class)->name('bookings.index');
-    Route::get('/bookings', function () {
-        return view('dashboard');
-    })->name('bookings.index');
+    // Booking frontend
+    // Why {booking} before /bookings?
+    // Not strictly necessary here since they're different patterns,
+    // but registering the more specific route first is good habit —
+    // it makes the ordering intention clear to anyone reading this file.
+    Route::get('/bookings/{booking}', BookingShow::class)
+        ->name('bookings.show');
 
-    // These placeholders stay until each frontend module is built
+    Route::get('/bookings', BookingIndex::class)
+        ->name('bookings.index');
+    Route::get('/assets/{asset}/book', BookingCreate::class)
+    ->name('bookings.create');
+    // =====================================================
+    // PLACEHOLDERS — replace as each frontend module is built
+    // =====================================================
     Route::get('/transactions', function () {
         return view('dashboard');
     })->name('transactions.index');

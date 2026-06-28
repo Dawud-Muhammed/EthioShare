@@ -255,19 +255,26 @@
 
                             </div>
                         @else
-                        <flux:button variant="primary" class="w-full">
-                            {{ __('Request to Book') }}
-                        </flux:button>
-                        {{--
-                            TODO: Phase D — wire:click="requestBooking"
-                            This button does nothing yet. It is a placeholder
-                            that shows renters the UI they will use in Phase D.
-                            Never show a broken button. A placeholder with
-                            coming-soon behavior is always better than a 500 error.
-                        --}}
-                        <flux:text class="text-xs text-center text-zinc-400">
-                            {{ __('Booking system coming soon.') }}
-                        </flux:text>
+                        @auth
+                            <flux:button
+                                href="{{ route('bookings.create', $asset->id) }}"
+                                wire:navigate
+                                variant="primary"
+                                class="w-full">
+                                {{ __('Request to Book') }}
+                            </flux:button>
+                        @else
+                            <flux:button
+                                href="{{ route('login') }}"
+                                wire:navigate
+                                variant="primary"
+                                class="w-full">
+                                {{ __('Login to Book') }}
+                            </flux:button>
+                            <flux:text class="text-xs text-center text-zinc-400">
+                                {{ __('You need an account to book assets.') }}
+                            </flux:text>
+                        @endauth
                     @endif
 
                 </div>
