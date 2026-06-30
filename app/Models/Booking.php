@@ -52,7 +52,7 @@ use Illuminate\Support\Carbon;
 ])]
 class Booking extends Model
 {
-    use HasFactory, HasUlids, SoftDeletes;
+    use HasFactory, HasUlids, SoftDeletes, HasFactory;
     // =====================
     // CASTING PIPELINE
     // =====================

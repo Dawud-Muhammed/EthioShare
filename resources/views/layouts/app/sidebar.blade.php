@@ -26,26 +26,28 @@
                         {{ __('My Assets') }}
                     </flux:sidebar.item>
 
-                    <flux:sidebar.item icon="calendar"
+                    {{-- BOOKINGS WITH PENDING BADGE --}}
+                    <flux:sidebar.item
+                        icon="calendar"
                         :href="route('bookings.index')"
                         :current="request()->routeIs('bookings.*')"
                         wire:navigate>
                         {{ __('My Bookings') }}
 
-                            {{-- PENDING COUNT BADGE --}}
-                            @auth
-                                @php
-                                    $pendingCount = \App\Models\Booking::where('owner_id', auth()->id())
-                                        ->where('booking_status', \App\Domains\Shared\Enums\Booking\BookingStatusEnum::PENDING)
-                                        ->count();
-                                @endphp
+                        {{-- PENDING COUNT BADGE --}}
+                        @auth
+                        @php
+                                $pendingCount = \App\Models\Booking::where('owner_id', auth()->id())
+                                    ->where('booking_status', \App\Domains\Shared\Enums\Booking\BookingStatusEnum::PENDING)
+                                    ->count();
+                            @endphp
 
-                                @if ($pendingCount > 0)
-                                    <span class="ml-auto inline-flex items-center justify-center min-w-5 h-5 px-1 text-xs font-bold text-white bg-red-500 rounded-full">
-                                        {{ $pendingCount > 99 ? '99+' : $pendingCount }}
-                                    </span>
-                                @endif
-                            @endauth
+                            @if ($pendingCount > 0)
+                                <span class="ml-auto inline-flex items-center justify-center min-w-5 h-5 px-1 text-xs font-bold text-white bg-red-500 rounded-full">
+                                    {{ $pendingCount > 99 ? '99+' : $pendingCount }}
+                                </span>
+                            @endif
+                        @endauth
                     </flux:sidebar.item>
 
                     <flux:sidebar.item icon="arrows-right-left"

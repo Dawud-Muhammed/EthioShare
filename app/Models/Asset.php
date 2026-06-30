@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 #[Fillable([
     'owner_id',
@@ -50,7 +51,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 ])]
 class Asset extends Model
 {
-    use HasUlids;
+    use HasUlids, HasFactory;
     /**
      * Get the attributes that should be cast.
      *
