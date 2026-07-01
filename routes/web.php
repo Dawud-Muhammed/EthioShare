@@ -10,7 +10,7 @@ use App\Livewire\Assets\Edit;
 use App\Livewire\Bookings\BookingShow;
 use App\Livewire\Bookings\BookingIndex;
 use App\Livewire\Bookings\BookingCreate;
-
+use App\Livewire\Bookings\ReviewIndex;
 
 // =====================================================
 // PUBLIC MARKETPLACE ROUTES
@@ -57,7 +57,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/reviews', function () {
         return view('dashboard');
     })->name('reviews.index');
-});
+
+
+    // Reviews
+    Route::get('/reviews', ReviewIndex::class)
+        ->name('reviews.index');
+    });
 
 // =====================================================
 // PUBLIC WILDCARD — must come LAST

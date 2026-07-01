@@ -63,13 +63,6 @@
                         wire:navigate>
                         {{ __('Disputes') }}
                     </flux:sidebar.item>
-
-                    <flux:sidebar.item icon="star"
-                        :href="route('reviews.index')"
-                        :current="request()->routeIs('reviews.*')"
-                        wire:navigate>
-                        {{ __('Reviews') }}
-                    </flux:sidebar.item>
                 </flux:sidebar.group>
             </flux:sidebar.nav>
 
@@ -77,7 +70,10 @@
 
             <flux:sidebar.nav>
                 <flux:sidebar.group :heading="__('Community')" class="grid mt-4">
-                    <flux:sidebar.item icon="star" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                    <flux:sidebar.item icon="star"
+                        :href="route('reviews.index')"
+                        :current="request()->routeIs('reviews.*')"
+                        wire:navigate>
                         {{ __('Reviews') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="heart" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>

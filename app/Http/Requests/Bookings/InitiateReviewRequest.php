@@ -23,7 +23,6 @@ class InitiateReviewRequest extends FormRequest{
             'rating.integer' => 'Rating must be a whole number.',
             'rating.min' => 'Rating must be at least 1 star.',
             'rating.max' => 'Rating cannot exceed 5 stars.',
-            'comment.required' => 'Please write a comment about your experience.',
             'comment.min' => 'Your comment must be at least 10 characters.',
             'comment.max' => 'Your comment cannot exceed 2000 characters.',
         ];

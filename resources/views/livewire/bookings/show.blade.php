@@ -535,6 +535,20 @@
             </div>
         </div>
         {{-- ===================== END RIGHT COLUMN ===================== --}}
+        
+        {{-- ===================== REVIEW SECTION ===================== --}}
+            {{-- Only rendered after the booking reaches COMPLETED status.
+                The component itself guards internally via $isRenter, so
+                the owner sees nothing even though this block is included. --}}
+            @if ($this->booking->booking_status->value === 'COMPLETED')
+                <div class="mt-6 max-w-2xl">
+                    <livewire:bookings.review-form
+                        :booking="$this->booking"
+                        :key="'review-' . $this->booking->id"
+                    />
+                </div>
+            @endif
+        {{-- ===================== END REVIEW SECTION ===================== --}}
 
     </div>
 </div>

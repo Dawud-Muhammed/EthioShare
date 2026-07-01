@@ -51,8 +51,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/bookings/{booking}/complete', [BookingController::class, 'complete'])
         ->name('bookings.complete');
     
+    // Reviews
+    Route::get('/reviews', [ReviewController::class, 'index'])
+        ->name('api.reviews.index');
+
     Route::post('/bookings/{booking}/reviews', [ReviewController::class, 'store'])
-    ->name('bookings.reviews.store');
+        ->name('bookings.reviews.store');
     // =============================================
     // ASSET-SCOPED BOOKING CREATION
     // Used by the "Book this asset" button on the
