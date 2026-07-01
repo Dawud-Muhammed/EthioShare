@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\V1\Users\ReviewController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\V1\Bookings\BookingController;
 
@@ -49,7 +50,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::patch('/bookings/{booking}/complete', [BookingController::class, 'complete'])
         ->name('bookings.complete');
-
+    
+    Route::post('/bookings/{booking}/reviews', [ReviewController::class, 'store'])
+    ->name('bookings.reviews.store');
     // =============================================
     // ASSET-SCOPED BOOKING CREATION
     // Used by the "Book this asset" button on the
