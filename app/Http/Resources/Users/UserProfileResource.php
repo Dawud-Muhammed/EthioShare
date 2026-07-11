@@ -24,7 +24,7 @@ class UserProfileResource extends UserResource
             // you can't bind a single "full name" string back to two
             // database columns without splitting it yourself.
             'first_name' => $this->first_name,
-            'last_name'  => $this->last_name,
+            'last_name' => $this->last_name,
 
             // =====================
             // CONTACT (private)
@@ -40,15 +40,15 @@ class UserProfileResource extends UserResource
             // Your model casts 'phone_number' => 'encrypted'. Laravel
             // decrypts automatically when you access $this->phone_number.
             // The resource just reads the attribute like any other.
-            'email'          => $this->email,
-            'email_verified' => !is_null($this->email_verified_at),
-            'phone_number'   => $this->phone_number,
+            'email' => $this->email,
+            'email_verified' => ! is_null($this->email_verified_at),
+            'phone_number' => $this->phone_number,
 
             // =====================
             // BUSINESS
             // =====================
-            'business_type'                 => $this->business_type->value,
-            'business_registration_number'  => $this->business_registration_number,
+            'business_type' => $this->business_type->value,
+            'business_registration_number' => $this->business_registration_number,
 
             // Why is_corporate_entity here?
             // It's a computed Attribute on your model — useful for the
@@ -65,14 +65,14 @@ class UserProfileResource extends UserResource
             // so it arrives as a string from some drivers. (int)
             // guarantees the frontend gets a number it can compare
             // (e.g. if (user.kyc_tier >= 2)).
-            'kyc_tier'             => (int) $this->kyc_tier,
+            'kyc_tier' => (int) $this->kyc_tier,
             'kyc_tier_verified_at' => $this->kyc_tier_verified_at?->toIso8601String(),
 
             // Why fayda_verified as a boolean, not the timestamp?
             // Same pattern as renter_reviewed/owner_reviewed in
             // BookingResource — the frontend cares "is this done?"
             // not "exactly when?"
-            'fayda_verified' => !is_null($this->fayda_verified_at),
+            'fayda_verified' => ! is_null($this->fayda_verified_at),
 
             // Why maskedFaydaId() instead of the raw fayda_id?
             // Even on the user's OWN profile, returning a full national
@@ -96,10 +96,10 @@ class UserProfileResource extends UserResource
             // rather than five separate top-level keys.
             'location' => [
                 'country_region' => $this->country_region,
-                'city'           => $this->city,
+                'city' => $this->city,
                 'address_line_1' => $this->address_line_1,
                 'address_line_2' => $this->address_line_2,
-                'postal_code'    => $this->postal_code,
+                'postal_code' => $this->postal_code,
             ],
             // TODO: Phase 2 — the 'location' column itself is a PostGIS
             // GEOGRAPHY(POINT) for geospatial search. Extracting
@@ -109,7 +109,7 @@ class UserProfileResource extends UserResource
             // =====================
             // ACCOUNT
             // =====================
-            'account_status'        => $this->account_status->value,
+            'account_status' => $this->account_status->value,
             'is_two_factor_enabled' => (bool) $this->is_two_factor_enabled,
 
             // =====================
@@ -121,7 +121,7 @@ class UserProfileResource extends UserResource
             // AUDIT
             // =====================
             'last_login_at' => $this->last_login_at?->toIso8601String(),
-            'created_at'    => $this->created_at->toIso8601String(),
+            'created_at' => $this->created_at->toIso8601String(),
         ]);
     }
 
@@ -152,6 +152,6 @@ class UserProfileResource extends UserResource
         // no bullet characters and just the short string, which is
         // still safe and won't crash.
         return str_repeat('•', max(strlen($this->fayda_id) - 4, 0))
-            . substr($this->fayda_id, -4);
+            .substr($this->fayda_id, -4);
     }
 }

@@ -2,10 +2,11 @@
 
 namespace App\Livewire\Bookings;
 
+use App\Domains\Shared\Enums\Booking\BookingStatusEnum;
+use App\Models\Booking;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\Booking;
-use App\Domains\Shared\Enums\Booking\BookingStatusEnum;
 
 class BookingIndex extends Component
 {
@@ -58,7 +59,7 @@ class BookingIndex extends Component
     // COMPUTED PROPERTIES
     // =====================
 
-    #[\Livewire\Attributes\Computed]
+    #[Computed]
     public function bookings()
     {
         // Why start with a base query and add conditions?
@@ -106,15 +107,16 @@ class BookingIndex extends Component
     // Building this from the enum means it updates automatically
     // if you add a new status in Phase 2. No hardcoded arrays
     // in the Blade view.
-    #[\Livewire\Attributes\Computed]
+    #[Computed]
     public function statusOptions(): array
     {
         return BookingStatusEnum::cases();
     }
 
-    #[\Livewire\Attributes\Computed]
-    public function pendingOwnerCount(): int{
-        
+    #[Computed]
+    public function pendingOwnerCount(): int
+    {
+
         return Booking::where('owner_id', auth()->id())
             ->where('booking_status', BookingStatusEnum::PENDING)
             ->count();

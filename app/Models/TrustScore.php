@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 // =====================
 // CONFIGURATION
@@ -29,7 +28,7 @@ use Illuminate\Support\Carbon;
     'risk_factors',
     'calculation_method',
     'calculation_timestamp',
-    'next_recalculation_at',    
+    'next_recalculation_at',
 ])]
 #[Hidden([
     'risk_factors',
@@ -97,6 +96,7 @@ class TrustScore extends Model
         return Attribute::make(
             get: function () {
                 $severity = $this->risk_factors['severity'] ?? null;
+
                 return $severity === 'HIGH' || $severity === 'CRITICAL';
             }
         )->shouldCache();
@@ -112,7 +112,7 @@ class TrustScore extends Model
     public function scopeDueForRecalculation($query)
     {
         return $query->whereNotNull('next_recalculation_at')
-                     ->where('next_recalculation_at', '<=', now());
+            ->where('next_recalculation_at', '<=', now());
     }
 
     /**

@@ -6,8 +6,11 @@ namespace App\Livewire\Assets;
 
 use App\Domains\Shared\Enums\Asset\StatusEnum;
 use App\Domains\Shared\Enums\Media\MediaPurpose;
+use App\Models\Asset;
+use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\WithPagination;
+
 // ↑ WithPagination is a Livewire trait that integrates Laravel's
 // paginator with Livewire's reactivity.
 // When page changes, Livewire re-renders only the list — no full reload.
@@ -31,15 +34,15 @@ class Index extends Component
         // would show page 3 of the new filter — confusing.
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
-        $query = \App\Models\Asset::query()
+        $query = Asset::query()
             ->where('owner_id', auth()->id())
             ->when($this->statusFilter !== '', function ($q) {
                 $q->where('status', $this->statusFilter);
             })
             ->with([
-                'media' => fn($q) => $q
+                'media' => fn ($q) => $q
                     ->where('purpose', MediaPurpose::ASSET_PHOTO)
                     ->where('is_primary', true)
                     ->limit(1),
@@ -48,7 +51,7 @@ class Index extends Component
             ->orderBy('created_at', 'desc');
 
         return view('livewire.assets.index', [
-            'assets'   => $query->paginate(10),
+            'assets' => $query->paginate(10),
             'statuses' => StatusEnum::values(),
             // ↑ Pass all status values for the filter dropdown.
         ])->layout('layouts.app');

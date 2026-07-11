@@ -12,22 +12,22 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('disputes', function (Blueprint $table) {
-            //disputes - conflict resolution between parties (renter/owner) for a booking
+            // disputes - conflict resolution between parties (renter/owner) for a booking
             $table->ulid('id')->primary();
 
-            //--// Core Relationships
-            $table->foreignUlid('booking_id')->constrained('bookings')->cascadeOnDelete();            
+            // --// Core Relationships
+            $table->foreignUlid('booking_id')->constrained('bookings')->cascadeOnDelete();
             $table->foreignUlid('initiator_id')->constrained('users')->cascadeOnDelete();
             $table->foreignUlid('respondent_id')->constrained('users')->cascadeOnDelete();
 
-            //--dispute identity
-            $table->enum('dispute_reason',[
-                'ASSET_DAMAGE', 'MISSING_HOURS', 'LATE_RETURN', 'RENTER_NO_SHOW', 'OTHER'
+            // --dispute identity
+            $table->enum('dispute_reason', [
+                'ASSET_DAMAGE', 'MISSING_HOURS', 'LATE_RETURN', 'RENTER_NO_SHOW', 'OTHER',
             ]);
             $table->string('title', 255);
             $table->text('description');
 
-            //-- Evidence & Documentation (JSONB for flexible attachment tracking)
+            // -- Evidence & Documentation (JSONB for flexible attachment tracking)
             /*
               -- [
                 -- { type: 'PHOTO', media_id, uploaded_by, uploaded_at, description },
@@ -38,19 +38,19 @@ return new class extends Migration
             */
             $table->jsonb('evidence');
 
-            //resolution workflow
+            // resolution workflow
             $table->enum('dispute_status', [
-                'OPEN', 'UNDER_REVIEW', 'AWAITING_RESPONSE', 'MEDIATED', 'RESOLVED', 'ESCALATED'
+                'OPEN', 'UNDER_REVIEW', 'AWAITING_RESPONSE', 'MEDIATED', 'RESOLVED', 'ESCALATED',
             ]);
-           // Support Staff Assignment
-           // i use nullOnDelete() so if a staff member leaves and their account is deleted,
-           // the historical dispute record is retained.
-            $table->foreignUlid('assigned_to_id')->nullable()->constrained('users')->noActionOnDelete(); //-- Support specialist
-            $table->decimal('resolution_amount_credited', 12, 2)->nullable(); //-- Refund to renter
+            // Support Staff Assignment
+            // i use nullOnDelete() so if a staff member leaves and their account is deleted,
+            // the historical dispute record is retained.
+            $table->foreignUlid('assigned_to_id')->nullable()->constrained('users')->noActionOnDelete(); // -- Support specialist
+            $table->decimal('resolution_amount_credited', 12, 2)->nullable(); // -- Refund to renter
             $table->text('resolution_notes')->nullable();
             $table->timestamp('resolved_at')->nullable();
 
-            //--appeal and escalation
+            // --appeal and escalation
             $table->integer('appeal_count')->default(0);
             $table->timestamp('last_appeal_at')->nullable();
             $table->text('escalation_reason')->nullable();

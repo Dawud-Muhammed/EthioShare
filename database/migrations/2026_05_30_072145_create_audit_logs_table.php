@@ -32,7 +32,7 @@ return new class extends Migration
             $table->ipAddress('ip_address')->nullable();
             $table->text('user_agent')->nullable();
             $table->uuid('request_id')->nullable(); // Useful for tracing the exact HTTP request lifecycle
-            
+
             // Timestamp (Immutable log, so no updated_at or deleted_at)
             $table->timestamp('created_at')->useCurrent();
 

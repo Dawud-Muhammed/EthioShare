@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Domains\Shared\Enums\Asset\TypeEnum;
 use App\Domains\Shared\Enums\Asset\ConditionEnum;
 use App\Domains\Shared\Enums\Asset\DeliveryMethodEnum;
 use App\Domains\Shared\Enums\Asset\StatusEnum;
+use App\Domains\Shared\Enums\Asset\TypeEnum;
 use App\Models\Asset;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -18,7 +18,7 @@ class AssetFactory extends Factory
     public function definition(): array
     {
         $hourlyRate = fake()->randomFloat(2, 50, 2000);
-        $dailyRate  = round($hourlyRate * 8, 2);
+        $dailyRate = round($hourlyRate * 8, 2);
         $weeklyRate = round($dailyRate * 6, 2);
 
         $regions = [
@@ -31,32 +31,32 @@ class AssetFactory extends Factory
         return [
             'owner_id' => User::factory(),
 
-            'title'       => fake()->randomElement([
+            'title' => fake()->randomElement([
                 'CAT 320D Excavator', 'Toyota Hilux 4x4', 'Isuzu Dump Truck',
                 'Honda Generator 5KVA', 'Bajaj Three Wheeler', 'Concrete Mixer',
                 'John Deere Tractor', 'Scaffolding Set', 'Water Pump 3 inch',
                 'Mitsubishi Forklift',
-            ]) . ' #' . fake()->numberBetween(1, 999),
+            ]).' #'.fake()->numberBetween(1, 999),
 
             'description' => fake()->paragraph(3),
 
             'asset_type' => fake()->randomElement(TypeEnum::cases()),
-            'condition'  => fake()->randomElement(ConditionEnum::cases()),
+            'condition' => fake()->randomElement(ConditionEnum::cases()),
 
-            'hourly_rate'      => $hourlyRate,
-            'daily_rate'       => $dailyRate,
-            'weekly_rate'      => $weeklyRate,
-            'monthly_rate'     => round($weeklyRate * 4, 2),
+            'hourly_rate' => $hourlyRate,
+            'daily_rate' => $dailyRate,
+            'weekly_rate' => $weeklyRate,
+            'monthly_rate' => round($weeklyRate * 4, 2),
             'security_deposit' => round($dailyRate * fake()->randomFloat(1, 1, 3), 2),
-            'estimated_value'  => round($dailyRate * fake()->numberBetween(50, 300), 2),
+            'estimated_value' => round($dailyRate * fake()->numberBetween(50, 300), 2),
 
-            'available_from'  => now()->subMonths(2),
+            'available_from' => now()->subMonths(2),
             'available_until' => now()->addMonths(6),
 
-            'region'             => fake()->randomElement($regions),
-            'address_line'       => fake()->streetAddress(),
-            'service_radius_km'  => fake()->randomElement([10, 25, 50, 75, 100]),
-            'delivery_method'    => fake()->randomElement(DeliveryMethodEnum::cases()),
+            'region' => fake()->randomElement($regions),
+            'address_line' => fake()->streetAddress(),
+            'service_radius_km' => fake()->randomElement([10, 25, 50, 75, 100]),
+            'delivery_method' => fake()->randomElement(DeliveryMethodEnum::cases()),
 
             'status' => fake()->randomElement([
                 StatusEnum::ACTIVE, StatusEnum::ACTIVE, StatusEnum::ACTIVE,

@@ -27,13 +27,13 @@ class BookingFactory extends Factory
         // This mirrors your actual CreateBookingAction output exactly.
 
         $start = Carbon::instance(fake()->dateTimeBetween('-3 months', '+1 month'));
-        $end   = (clone $start)->addHours(fake()->numberBetween(2, 72));
+        $end = (clone $start)->addHours(fake()->numberBetween(2, 72));
 
-        $hours       = ceil($start->diffInHours($end));
+        $hours = ceil($start->diffInHours($end));
         $rateApplied = fake()->randomFloat(2, 50, 500);
         $rentalAmount = $hours * $rateApplied;
-        $platformFee  = round($rentalAmount * 0.075, 2);
-        $deposit      = fake()->randomFloat(2, 200, 2000);
+        $platformFee = round($rentalAmount * 0.075, 2);
+        $deposit = fake()->randomFloat(2, 200, 2000);
 
         return [
             // Why Asset::factory() and User::factory() as defaults?
@@ -43,29 +43,29 @@ class BookingFactory extends Factory
             // In practice your seeder WILL always pass these explicitly
             // (see BookingSeeder below) because renter_id must never
             // equal owner_id — that's a real guard in your own code.
-            'asset_id'  => Asset::factory(),
+            'asset_id' => Asset::factory(),
             'renter_id' => User::factory(),
-            'owner_id'  => User::factory(),
+            'owner_id' => User::factory(),
 
             'start_datetime' => $start,
-            'end_datetime'   => $end,
+            'end_datetime' => $end,
 
             // Why null here?
             // A freshly created PENDING booking has no actual times yet
             // — the renter hasn't arrived, nothing has happened.
             // States below fill these in for later statuses.
             'actual_start_datetime' => null,
-            'actual_end_datetime'   => null,
+            'actual_end_datetime' => null,
 
-            'rate_applied'            => $rateApplied,
-            'total_rental_amount'     => $rentalAmount,
+            'rate_applied' => $rateApplied,
+            'total_rental_amount' => $rentalAmount,
             'security_deposit_amount' => $deposit,
-            'platform_fee'            => $platformFee,
-            'total_charged'           => $rentalAmount + $platformFee + $deposit,
+            'platform_fee' => $platformFee,
+            'total_charged' => $rentalAmount + $platformFee + $deposit,
 
             'booking_status' => BookingStatusEnum::PENDING,
             'payment_status' => PaymentStatusEnum::PENDING,
-            'escrow_status'  => EscrowStatusEnum::PENDING,
+            'escrow_status' => EscrowStatusEnum::PENDING,
 
             'handoff_method' => fake()->randomElement(HandoffMethodEnum::cases()),
 
@@ -83,7 +83,6 @@ class BookingFactory extends Factory
      * → ... → CompleteBookingAction would produce if a real user walked
      * through the full lifecycle by hand.
      */
-
     public function pending(): static
     {
         // Why is this state basically empty?
@@ -94,7 +93,7 @@ class BookingFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'booking_status' => BookingStatusEnum::PENDING,
             'payment_status' => PaymentStatusEnum::PENDING,
-            'escrow_status'  => EscrowStatusEnum::PENDING,
+            'escrow_status' => EscrowStatusEnum::PENDING,
         ]);
     }
 
@@ -103,7 +102,7 @@ class BookingFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'booking_status' => BookingStatusEnum::CONFIRMED,
             'payment_status' => PaymentStatusEnum::AUTHORIZED,
-            'escrow_status'  => EscrowStatusEnum::FUNDED,
+            'escrow_status' => EscrowStatusEnum::FUNDED,
         ]);
     }
 
@@ -118,9 +117,9 @@ class BookingFactory extends Factory
             $start = Carbon::parse($attributes['start_datetime']);
 
             return [
-                'booking_status'        => BookingStatusEnum::RENTER_ARRIVED,
-                'payment_status'        => PaymentStatusEnum::AUTHORIZED,
-                'escrow_status'         => EscrowStatusEnum::FUNDED,
+                'booking_status' => BookingStatusEnum::RENTER_ARRIVED,
+                'payment_status' => PaymentStatusEnum::AUTHORIZED,
+                'escrow_status' => EscrowStatusEnum::FUNDED,
                 'actual_start_datetime' => $start->copy()->addMinutes(fake()->numberBetween(0, 20)),
             ];
         });
@@ -132,11 +131,11 @@ class BookingFactory extends Factory
             $start = Carbon::parse($attributes['start_datetime']);
 
             return [
-                'booking_status'        => BookingStatusEnum::IN_PROGRESS,
-                'payment_status'        => PaymentStatusEnum::CAPTURED,
-                'escrow_status'         => EscrowStatusEnum::HELD,
+                'booking_status' => BookingStatusEnum::IN_PROGRESS,
+                'payment_status' => PaymentStatusEnum::CAPTURED,
+                'escrow_status' => EscrowStatusEnum::HELD,
                 'actual_start_datetime' => $start->copy()->addMinutes(fake()->numberBetween(0, 20)),
-                'handoff_completed_at'  => $start->copy()->addMinutes(fake()->numberBetween(0, 20)),
+                'handoff_completed_at' => $start->copy()->addMinutes(fake()->numberBetween(0, 20)),
             ];
         });
     }
@@ -145,7 +144,7 @@ class BookingFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             $start = Carbon::parse($attributes['start_datetime']);
-            $end   = Carbon::parse($attributes['end_datetime']);
+            $end = Carbon::parse($attributes['end_datetime']);
 
             // Why sometimes push actual_end_datetime past end_datetime?
             // This is exactly the "late return" scenario from our last
@@ -159,14 +158,14 @@ class BookingFactory extends Factory
                 : $end->copy()->subMinutes(fake()->numberBetween(0, 30));
 
             return [
-                'booking_status'             => BookingStatusEnum::COMPLETED,
-                'payment_status'             => PaymentStatusEnum::CAPTURED,
-                'escrow_status'              => EscrowStatusEnum::RELEASED,
-                'actual_start_datetime'      => $start->copy()->addMinutes(fake()->numberBetween(0, 20)),
-                'actual_end_datetime'        => $actualEnd,
-                'handoff_completed_at'       => $start->copy()->addMinutes(fake()->numberBetween(0, 20)),
+                'booking_status' => BookingStatusEnum::COMPLETED,
+                'payment_status' => PaymentStatusEnum::CAPTURED,
+                'escrow_status' => EscrowStatusEnum::RELEASED,
+                'actual_start_datetime' => $start->copy()->addMinutes(fake()->numberBetween(0, 20)),
+                'actual_end_datetime' => $actualEnd,
+                'handoff_completed_at' => $start->copy()->addMinutes(fake()->numberBetween(0, 20)),
                 'renter_review_submitted_at' => fake()->boolean(60) ? $actualEnd->copy()->addHours(fake()->numberBetween(1, 72)) : null,
-                'owner_review_submitted_at'  => fake()->boolean(50) ? $actualEnd->copy()->addHours(fake()->numberBetween(1, 72)) : null,
+                'owner_review_submitted_at' => fake()->boolean(50) ? $actualEnd->copy()->addHours(fake()->numberBetween(1, 72)) : null,
             ];
         });
     }

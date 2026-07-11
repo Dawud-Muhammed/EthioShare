@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Bookings;
 
-use App\Domains\Bookings\Actions\SubmitReviewAction;
 use App\Models\Review;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -47,7 +47,7 @@ class ReviewIndex extends Component
             ->paginate(10);
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.bookings.review-index')
             ->layout('layouts.app');

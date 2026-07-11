@@ -16,44 +16,44 @@ return new class extends Migration
             $table->ulid('id')->primary();
 
             $table->enum('media_type', [
-            'PHOTO', 'VIDEO', 'DOCUMENT', 'QR_CODE', 'THERMAL_IMAGE'
+                'PHOTO', 'VIDEO', 'DOCUMENT', 'QR_CODE', 'THERMAL_IMAGE',
             ]);
 
             // Polymorphic Relationship (Laravel Magic -- follows laravel conventions)
             // This single line creates `mediable_type` (VARCHAR) and `mediable_id` (ULID)
             // AND automatically creates the composite index `idx_mediable`.
-            $table->ulidMorphs('mediable'); //-- 'User', 'Asset', 'Booking', 'Dispute'
+            $table->ulidMorphs('mediable'); // -- 'User', 'Asset', 'Booking', 'Dispute'
 
             // File Metadata
             $table->string('file_name', 255);
             $table->string('mime_type', 100);
             $table->bigInteger('file_size_bytes');
-            $table->string('file_hash', 64)->nullable(); //-- SHA-256 for integrity
+            $table->string('file_hash', 64)->nullable(); // -- SHA-256 for integrity
 
             // Storage & CDN
-            $table->string('disk_name', 100); //-- 's3', 'local', 'gcs'
+            $table->string('disk_name', 100); // -- 's3', 'local', 'gcs'
             $table->string('disk_path', 500);
             $table->string('cdn_url', 500)->nullable();
 
             // Purpose & Categorization
             $table->enum('purpose', [
-            'KYC_VERIFICATION', 'ASSET_PHOTO', 'ASSET_INSPECTION',
-            'BOOKING_HANDOFF', 'DISPUTE_EVIDENCE', 'OTHER'
+                'KYC_VERIFICATION', 'ASSET_PHOTO', 'ASSET_INSPECTION',
+                'BOOKING_HANDOFF', 'DISPUTE_EVIDENCE', 'OTHER',
             ]);
             $table->text('upload_reason')->nullable();
-            $table->boolean('is_primary')->default(false); //-- For assets: primary photo
-           
+            $table->boolean('is_primary')->default(false); // -- For assets: primary photo
+
             // Compliance
             $table->enum('virus_scan_status', [
-            'PENDING', 'PASSED', 'FLAGGED'
+                'PENDING', 'PASSED', 'FLAGGED',
             ])->nullable();
             $table->enum('content_moderation_status', [
-            'PENDING', 'APPROVED', 'REJECTED'
+                'PENDING', 'APPROVED', 'REJECTED',
             ])->nullable();
 
             // Encryption
             $table->boolean('is_encrypted')->default(true);
-            $table->string('encryption_key_id', 100)->nullable(); //-- KMS reference
+            $table->string('encryption_key_id', 100)->nullable(); // -- KMS reference
 
             // Audit
             $table->foreignUlid('uploaded_by_id')->constrained('users')->cascadeOnDelete();

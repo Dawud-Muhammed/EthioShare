@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use \App\Shared\Enums\EscrowLedger\GatewayName;
-use \App\Shared\Enums\EscrowLedger\OwnerPayoutStatus;
-use \App\Shared\Enums\EscrowLedger\EscrowLedgerStatus;
+use App\Domains\Shared\Enums\EscrowLedger\EscrowLedgerStatus;
+use App\Domains\Shared\Enums\EscrowLedger\GatewayName;
+use App\Domains\Shared\Enums\EscrowLedger\OwnerPayoutStatus;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -33,7 +33,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'owner_account_id',
     'status',
     'status_updated_at',
-    'expires_at',    
+    'expires_at',
 ])]
 
 // =====================
@@ -41,7 +41,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 // =====================
 #[Hidden([
     'owner_account_id',
-    'deleted_at',    
+    'deleted_at',
 ])]
 class EscrowLedger extends Model
 {
@@ -121,22 +121,22 @@ class EscrowLedger extends Model
 
     /**
      * Scope a query to only include ledgers awaiting owner payout.
-    */
+     */
     public function scopePendingPayout($query)
     {
         return $query->where('owner_payout_status', OwnerPayoutStatus::PENDING)
-                     ->where('status', EscrowLedgerStatus::RELEASED)
-                     ->where('amount_released', '>', 0);
+            ->where('status', EscrowLedgerStatus::RELEASED)
+            ->where('amount_released', '>', 0);
     }
 
     /**
      * Scope a query to find ledgers that require automatic refund processing.
-    */
+     */
     public function scopeExpiredAndUncaptured($query)
     {
         return $query->where('status', EscrowLedgerStatus::FUNDED)
-                     ->whereNotNull('expires_at')
-                     ->where('expires_at', '<=', now());
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '<=', now());
     }
 
     // =====================
@@ -145,7 +145,7 @@ class EscrowLedger extends Model
 
     /**
      * Record a new financial event to the immutable JSONB ledger.
-    */
+     */
     public function recordTransaction(array $transactionDetails): void
     {
         $transactions = $this->transactions ?? [];

@@ -1,8 +1,11 @@
 <?php
-namespace  App\Domains\Shared\Enums\Asset;
+
+namespace App\Domains\Shared\Enums\Asset;
+
 use App\Domains\Shared\Traits\EnumValues;
 
-enum DeliveryMethodEnum: string{
+enum DeliveryMethodEnum: string
+{
     use EnumValues;
     case SELF_TRANSPORT = 'SELF_TRANSPORT';
     case PLATFORM_TRANSPORT = 'PLATFORM_TRANSPORT';

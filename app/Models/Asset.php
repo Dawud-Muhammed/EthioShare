@@ -2,20 +2,20 @@
 
 namespace App\Models;
 
-use App\Domains\Shared\Enums\Asset\StatusEnum;
-use App\Domains\Shared\Enums\Asset\VisibilityEnum;
-use App\Domains\Shared\Enums\Asset\TypeEnum;
 use App\Domains\Shared\Enums\Asset\ConditionEnum;
 use App\Domains\Shared\Enums\Asset\DeliveryMethodEnum;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Domains\Shared\Enums\Asset\StatusEnum;
+use App\Domains\Shared\Enums\Asset\TypeEnum;
+use App\Domains\Shared\Enums\Asset\VisibilityEnum;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 #[Fillable([
     'owner_id',
@@ -44,94 +44,108 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
     'average_rating',
     'total_reviews',
     'total_bookings',
-    'total_rental_hours'
+    'total_rental_hours',
 ])]
 #[Hidden([
-    'deleted_at'
+    'deleted_at',
 ])]
 class Asset extends Model
 {
-    use HasUlids, HasFactory;
+    use HasFactory, HasUlids;
+
     /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
      */
-    protected function casts(): array{
-        return[
-             //--enums
-        'asset_type' => TypeEnum::Class,
-        'condition'  => ConditionEnum::class,
-        'delivery_method'=> DeliveryMethodEnum::class,
-        'status' => StatusEnum::class,
-        'visibility' => VisibilityEnum::class,
+    protected function casts(): array
+    {
+        return [
+            // --enums
+            'asset_type' => TypeEnum::class,
+            'condition' => ConditionEnum::class,
+            'delivery_method' => DeliveryMethodEnum::class,
+            'status' => StatusEnum::class,
+            'visibility' => VisibilityEnum::class,
 
-    //--Decimals [financial and geospatial]
-        'hourly_rate' => 'decimal:2',
-        'daily_rate' => 'decimal:2',
-        'weekly_rate' => 'decimal:2',
-        'monthly_rate' => 'decimal:2',
-        'security_deposit' => 'decimal:2',
-        'estimated_value' => 'decimal:2',
-        'service_radius_km' => 'decimal:2',
-        'average_rating' => 'decimal:2',
+            // --Decimals [financial and geospatial]
+            'hourly_rate' => 'decimal:2',
+            'daily_rate' => 'decimal:2',
+            'weekly_rate' => 'decimal:2',
+            'monthly_rate' => 'decimal:2',
+            'security_deposit' => 'decimal:2',
+            'estimated_value' => 'decimal:2',
+            'service_radius_km' => 'decimal:2',
+            'average_rating' => 'decimal:2',
 
-    //--jsonb payloads
-        'specifications' => 'array',
-        'features' => 'array',    
-    
-    //--dates
-        'available_from' => 'date',
-        'available_until' => 'date', 
-        'status_updated_at' => 'datetime',
-    //--intgers
-        'total_reviews' => 'integer',
-        'total_bookings' => 'integer',
-        'total_rental_hours' => 'integer',  
+            // --jsonb payloads
+            'specifications' => 'array',
+            'features' => 'array',
+
+            // --dates
+            'available_from' => 'date',
+            'available_until' => 'date',
+            'status_updated_at' => 'datetime',
+            // --intgers
+            'total_reviews' => 'integer',
+            'total_bookings' => 'integer',
+            'total_rental_hours' => 'integer',
         ];
     }
+
     // =====================
     // RELATIONSHIPS
     // =====================
-    public function owner(): BelongsTo{
-        return $this->belongsTo(User::class,'owner_id');
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id');
     }
-    public function bookings(): HasMany{
-        return $this->hasMany(Booking::class,'asset_id');
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class, 'asset_id');
     }
-    public function handOffLocations(): HasMany{
-        return $this->hasMany(HandoffLocation::class,'asset_id');
+
+    public function handOffLocations(): HasMany
+    {
+        return $this->hasMany(HandoffLocation::class, 'asset_id');
     }
-    public function media():MorphMany{
+
+    public function media(): MorphMany
+    {
         return $this->morphMany(Media::class, 'mediable');
     }
-    public function reviews(): MorphMany{
+
+    public function reviews(): MorphMany
+    {
         return $this->morphMany(Review::class, 'reviewable');
     }
 
     // =====================
     // COMPUTED ATTRIBUTES
     // =====================
-    //--Determine if the asset is currently available for rent.
-    public function isAvailableForRent(): Attribute{
+    // --Determine if the asset is currently available for rent.
+    public function isAvailableForRent(): Attribute
+    {
         return Attribute::make(
-            get: fn()=> $this->status === StatusEnum::ACTIVE 
+            get: fn () => $this->status === StatusEnum::ACTIVE
                       && $this->visibility === VisibilityEnum::PUBLIC
                       && (is_null($this->avaulable_from) || $this->available_from->isPast())
-                      &&(is_null($this->available_untill) || $this->available_untill->isFuture())
+                      && (is_null($this->available_untill) || $this->available_untill->isFuture())
         )->shouldCache();
     }
 
     /**
      * Parse PostGIS WKB/WKT location into a structured array.
      * (Assuming spatial data isn't handled by a dedicated package here).
-    */
-    protected function coordinates(): Attribute{
+     */
+    protected function coordinates(): Attribute
+    {
         return Attribute::make(
-            get: function() {
+            get: function () {
                 // In a true PostGIS setup, $this->location returns standard WKB/WKT.
                 // You would extract latitude/longitude here or rely on a spatial package.
-                return[
+                return [
                     'latitude' => null,
                     'altitude' => null,
                 ];
@@ -142,19 +156,23 @@ class Asset extends Model
     // =====================
     // SCOPES (QUERY BUILDERS)
     // =====================
-    public function scopeActive($query){
-        return $query->where('status',StatusEnum::ACTIVE);
-    }    
-    public function scopePubliclyVisible($query){
+    public function scopeActive($query)
+    {
+        return $query->where('status', StatusEnum::ACTIVE);
+    }
+
+    public function scopePubliclyVisible($query)
+    {
         return $query->where('visibility', VisibilityEnum::PUBLIC);
     }
 
     // =====================
     // DOMAIN BUSINESS LOGIC
     // =====================
-    //-- * Safely transition the asset state to published.
-    
-    public function publish(): void{
+    // -- * Safely transition the asset state to published.
+
+    public function publish(): void
+    {
         $this->update([
             'status' => StatusEnum::ACTIVE,
             'status_updated_at' => now(),

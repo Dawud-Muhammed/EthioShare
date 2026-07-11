@@ -1,25 +1,30 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace App\Domains\Assets\Actions;
 
 use App\Domains\Shared\Enums\Asset\StatusEnum;
 use App\Models\Asset;
 use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
-class UpdateAssetAction{
-    public function execute(array $data, Asset $asset, User $owner, ?array $newPhotos = null): Asset{
+
+class UpdateAssetAction
+{
+    public function execute(array $data, Asset $asset, User $owner, ?array $newPhotos = null): Asset
+    {
         $this->ensureOwnership($asset, $owner);
         $this->ensureIsEditable($asset);
 
-        return DB::transaction(function () use($data, $asset){
+        return DB::transaction(function () use ($data, $asset) {
             $asset->update($data);
             // TODO: Phase 2 — dispatch AssetUpdated event:
             // event(new \App\Domains\Assets\Events\AssetUpdated($asset, $data));
             // Listeners will: re-index search, notify active bookers of price change.
 
             // Handle new photos if any were uploaded
-            if (!empty($newPhotos)) {
+            if (! empty($newPhotos)) {
                 $storeAction = app(StoreAssetMediaAction::class);
                 foreach ($newPhotos as $photo) {
                     $storeAction->execute(
@@ -30,22 +35,25 @@ class UpdateAssetAction{
                     );
                 }
             }
-            
+
             return $asset->fresh();
         });
     }
 
-    private function ensureOwnership(Asset $asset, User $owner): void{
-        if($asset->owner_id !== $owner->id){
-            throw new \Illuminate\Auth\Access\AuthorizationException(
+    private function ensureOwnership(Asset $asset, User $owner): void
+    {
+        if ($asset->owner_id !== $owner->id) {
+            throw new AuthorizationException(
                 'You do not own this asset.'
             );
-          
+
         }
     }
-    private function ensureIsEditable(Asset $asset): void{
-        $assetStatus = [StatusEnum::DELISTED->value , StatusEnum::ARCHIVED->value] ;
-        if(in_array($asset->status->values(), $assetStatus)){
+
+    private function ensureIsEditable(Asset $asset): void
+    {
+        $assetStatus = [StatusEnum::DELISTED->value, StatusEnum::ARCHIVED->value];
+        if (in_array($asset->status->values(), $assetStatus)) {
             throw new \InvalidArgumentException(
                 '"Assets with status {$asset->status->value} cannot be edited."'
             );

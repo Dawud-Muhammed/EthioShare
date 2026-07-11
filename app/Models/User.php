@@ -22,17 +22,17 @@ use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-    // =====================
-    // CONFIGURATION
-    // =====================
-    //--The attributes that are mass assignable.
+// =====================
+// CONFIGURATION
+// =====================
+// --The attributes that are mass assignable.
 
 #[Fillable([
-    'email', 
-    'email_verified_at', 
-    'phone_number', 
-    'password', 
-    'fayda_id',  
+    'email',
+    'email_verified_at',
+    'phone_number',
+    'password',
+    'fayda_id',
     'fayda_verified_at',
     'kyc_tier',
     'kyc_tier_verified_at',
@@ -56,11 +56,11 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
     'last_login_at',
 ])]
 
-    //--The attributes that should be hidden for serialization.
+// --The attributes that should be hidden for serialization.
 #[Hidden([
-    'password', 
-    'two_factor_secret', 
-    'two_factor_recovery_codes', 
+    'password',
+    'two_factor_secret',
+    'two_factor_recovery_codes',
     'remember_token',
     'fayda_id',
     'phone_number',
@@ -69,33 +69,34 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 class User extends Authenticatable implements PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable, HasUlids, SoftDeletes;
+    use HasFactory, HasUlids, Notifiable, PasskeyAuthenticatable, SoftDeletes, TwoFactorAuthenticatable;
 
     /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
      */
-    protected function casts(): array{
-        return[
+    protected function casts(): array
+    {
+        return [
             'password' => 'hashed',
 
-            //--Security: AES-256-GCM Encryption at Rest
+            // --Security: AES-256-GCM Encryption at Rest
             'fayda_id' => 'encrypted',
             'phone_number' => 'encrypted',
             'business_verification_number' => 'encrypted',
 
-            //--JSON & Enums
+            // --JSON & Enums
             'kyc_metadata' => 'array',
             'business_type' => BusinessTypeEnum::class,
             'account_status' => AccountStatusEnum::class,
 
-            //--Booleans and Decimals
+            // --Booleans and Decimals
             'is_two_factor_enabled' => 'boolean',
             'is_verified' => 'boolean',
             'total_trust_score' => 'decimal:2',
 
-            //--dates
+            // --dates
             'email_verified_at' => 'datetime',
             'fayda_verified_at' => 'datetime',
             'kyc_tier_verified_at' => 'datetime',
@@ -108,49 +109,66 @@ class User extends Authenticatable implements PasskeyUser
     // RELATIONSHIPS
     // =====================
 
-    public function assets(): HasMany{
+    public function assets(): HasMany
+    {
         return $this->hasMany(Asset::class, 'owner_key');
     }
-    public function bookingAsRenter(): HasMany{
+
+    public function bookingAsRenter(): HasMany
+    {
         return $this->hasMany(Booking::class, 'renter_id');
     }
-    public function bookingAsOwner(): HasMany{
+
+    public function bookingAsOwner(): HasMany
+    {
         return $this->hasMany(Booking::class, 'owner_id');
     }
-    public function trustScores():HasOne{
+
+    public function trustScores(): HasOne
+    {
         return $this->hasone(TrustScore::class);
     }
-    public function reviewsAsReviwer():HasMany{
+
+    public function reviewsAsReviwer(): HasMany
+    {
         return $this->hasMany(Review::class, 'reviwer_id');
     }
-    public function disputesInitiated(): HasMany{
+
+    public function disputesInitiated(): HasMany
+    {
         return $this->hasMany(Dispute::class, 'initiator_id');
     }
-    public function disputesReceived(): HasMany{
+
+    public function disputesReceived(): HasMany
+    {
         return $this->hasMany(Dispute::class, 'respondent_id');
     }
-    public function media():MorphMany{
+
+    public function media(): MorphMany
+    {
         return $this->morphMany(Media::class, 'mediable');
     }
-    
+
     // =====================
     // COMPUTED ATTRIBUTES
     // =====================
 
-    //--* Get the user's full name.
-    protected function fullName(): Attribute{
+    // --* Get the user's full name.
+    protected function fullName(): Attribute
+    {
         return Attribute::make(
-            get:fn ()=>trim("{$this->first_name} {$this->last_name}")
+            get: fn () => trim("{$this->first_name} {$this->last_name}")
         )->shouldCache();
     }
-    
-    //--* Determine if the user operates as a business entity.
-    protected function isCorporateEntity(): Attribute{
+
+    // --* Determine if the user operates as a business entity.
+    protected function isCorporateEntity(): Attribute
+    {
         return Attribute::make(
-            get: fn()=>in_array($this->business_type,[
+            get: fn () => in_array($this->business_type, [
                 BusinessTypeEnum::SME,
                 BusinessTypeEnum::CORPORATIVE,
-                BusinessTypeEnum::COOPERATIVE
+                BusinessTypeEnum::COOPERATIVE,
             ])
         );
     }
@@ -159,28 +177,34 @@ class User extends Authenticatable implements PasskeyUser
     // SCOPES (QUERY BUILDERS)
     // =====================
 
-    public function scopeActive($query){
+    public function scopeActive($query)
+    {
         return $query->where('account_status', AccountStatusEnum::ACTIVE);
     }
-    public function scopeRequiresKycUpgrade($query){
-        return $query->where('kyc_tier','<',2);
+
+    public function scopeRequiresKycUpgrade($query)
+    {
+        return $query->where('kyc_tier', '<', 2);
     }
 
     // =====================
     // DOMAIN BUSINESS LOGIC
     // =====================
-    //-- * Check if the user is eligible to rent heavy machinery.
+    // -- * Check if the user is eligible to rent heavy machinery.
 
-    public function canRentHeavyMachinery(): bool{
+    public function canRentHeavyMachinery(): bool
+    {
         return $this->is_verified && $this->kyc_tier >= 2 && $this->account_status === AccountStatusEnum::ACTIVE;
     }
+
     /**
      * Get the user's initials
      */
     public function initials(): string
     {
-        $first = Str::substr($this->first_name?? '', 0, 1);
-        $last = Str::substr($this->last_name?? '', 0, 1);
-        return strtoupper($first . $last);
+        $first = Str::substr($this->first_name ?? '', 0, 1);
+        $last = Str::substr($this->last_name ?? '', 0, 1);
+
+        return strtoupper($first.$last);
     }
 }

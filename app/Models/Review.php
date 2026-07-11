@@ -116,9 +116,9 @@ class Review extends Model
     protected function isDetailed(): Attribute
     {
         return Attribute::make(
-            get: fn () => !is_null($this->cleanliness_rating) 
-                       || !is_null($this->punctuality_rating) 
-                       || !is_null($this->communication_rating)
+            get: fn () => ! is_null($this->cleanliness_rating)
+                       || ! is_null($this->punctuality_rating)
+                       || ! is_null($this->communication_rating)
         )->shouldCache();
     }
 
@@ -132,7 +132,7 @@ class Review extends Model
     public function scopeVerified($query)
     {
         return $query->where('is_verified_booking', true)
-                     ->where('is_flagged', false); // Never surface flagged reviews publicly
+            ->where('is_flagged', false); // Never surface flagged reviews publicly
     }
 
     /**

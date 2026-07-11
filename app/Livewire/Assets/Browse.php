@@ -10,6 +10,7 @@ use App\Domains\Shared\Enums\Asset\StatusEnum;
 use App\Domains\Shared\Enums\Asset\TypeEnum;
 use App\Domains\Shared\Enums\Media\MediaPurpose;
 use App\Models\Asset;
+use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -23,13 +24,19 @@ class Browse extends Component
     // Public = reactive. Change any of these → list re-renders.
     // =========================================================
 
-    public string $region          = '';
-    public string $assetType       = '';
-    public string $condition       = '';
-    public string $deliveryMethod  = '';
-    public string $minPrice        = '';
-    public string $maxPrice        = '';
-    public string $search          = '';
+    public string $region = '';
+
+    public string $assetType = '';
+
+    public string $condition = '';
+
+    public string $deliveryMethod = '';
+
+    public string $minPrice = '';
+
+    public string $maxPrice = '';
+
+    public string $search = '';
     // ↑ Free text search on title. Phase 1 addition.
     // TODO: Phase 2 — replace with full-text search via Scout + Meilisearch.
 
@@ -37,13 +44,40 @@ class Browse extends Component
     // LIVEWIRE LIFECYCLE HOOKS
     // =========================================================
 
-    public function updatedRegion(): void         { $this->resetPage(); }
-    public function updatedAssetType(): void      { $this->resetPage(); }
-    public function updatedCondition(): void      { $this->resetPage(); }
-    public function updatedDeliveryMethod(): void { $this->resetPage(); }
-    public function updatedMinPrice(): void       { $this->resetPage(); }
-    public function updatedMaxPrice(): void       { $this->resetPage(); }
-    public function updatedSearch(): void         { $this->resetPage(); }
+    public function updatedRegion(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedAssetType(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedCondition(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedDeliveryMethod(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedMinPrice(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedMaxPrice(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
+    }
     // ↑ Every filter change resets to page 1.
     // Same reasoning as Index component.
     // Each updatedXxx() matches a property name exactly.
@@ -62,9 +96,21 @@ class Browse extends Component
         $this->resetPage();
     }
 
-    public function getAssetTypesProperty(): array   { return TypeEnum::values(); }
-    public function getConditionsProperty(): array    { return ConditionEnum::values(); }
-    public function getDeliveryMethodsProperty(): array { return DeliveryMethodEnum::values(); }
+    public function getAssetTypesProperty(): array
+    {
+        return TypeEnum::values();
+    }
+
+    public function getConditionsProperty(): array
+    {
+        return ConditionEnum::values();
+    }
+
+    public function getDeliveryMethodsProperty(): array
+    {
+        return DeliveryMethodEnum::values();
+    }
+
     public function getEthiopianRegionsProperty(): array
     {
         return [
@@ -75,7 +121,7 @@ class Browse extends Component
         ];
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         $assets = Asset::query()
             ->where('status', StatusEnum::ACTIVE)
@@ -83,7 +129,7 @@ class Browse extends Component
             // Public browse never shows DRAFT, PAUSED, or DELISTED assets.
 
             ->when($this->search !== '', function ($q) {
-                $q->where('title', 'ilike', '%' . $this->search . '%');
+                $q->where('title', 'ilike', '%'.$this->search.'%');
                 // ↑ 'ilike' is PostgreSQL's case-insensitive LIKE.
                 // 'excavator' matches 'Excavator', 'EXCAVATOR', 'excavator'.
                 // Standard MySQL uses 'like' (case-insensitive by default).
@@ -118,7 +164,7 @@ class Browse extends Component
             })
 
             ->with([
-                'media' => fn($q) => $q
+                'media' => fn ($q) => $q
                     ->where('purpose', MediaPurpose::ASSET_PHOTO)
                     ->where('is_primary', true)
                     ->limit(1),
@@ -134,11 +180,11 @@ class Browse extends Component
 
         return view('livewire.assets.browse', [
             'assets' => $assets,
-            'assetTypes' => TypeEnum::values(),           
+            'assetTypes' => TypeEnum::values(),
             'conditions' => ConditionEnum::values(),
             'deliveryMethods' => DeliveryMethodEnum::values(),
             'ethiopianRegions' => $this->ethiopianRegions,
-            ])->layout('layouts.marketplace');
+        ])->layout('layouts.marketplace');
         // ↑ Public page → marketplace layout, not app layout.
         // This is the distinction we established in the planning phase.
     }

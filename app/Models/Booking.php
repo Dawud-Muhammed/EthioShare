@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Carbon;
 
 // =====================
 // CONFIGURATION
@@ -48,11 +47,11 @@ use Illuminate\Support\Carbon;
 ])]
 #[Hidden([
     'handoff_qr_code', // Contains sensitive digital access payload
-    'deleted_at',    
+    'deleted_at',
 ])]
 class Booking extends Model
 {
-    use HasFactory, HasUlids, SoftDeletes, HasFactory;
+    use HasFactory, HasFactory, HasUlids, SoftDeletes;
     // =====================
     // CASTING PIPELINE
     // =====================
@@ -171,9 +170,10 @@ class Booking extends Model
     {
         return Attribute::make(
             get: function () {
-                if (!$this->start_datetime || !$this->end_datetime) {
+                if (! $this->start_datetime || ! $this->end_datetime) {
                     return 0;
                 }
+
                 return $this->start_datetime->diffInHours($this->end_datetime);
             }
         )->shouldCache();
@@ -185,7 +185,7 @@ class Booking extends Model
     protected function isActive(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->booking_status === BookingStatusEnum::IN_PROGRESS 
+            get: fn () => $this->booking_status === BookingStatusEnum::IN_PROGRESS
                        && $this->payment_status === PaymentStatusEnum::CAPTURED
         )->shouldCache();
     }
@@ -208,8 +208,8 @@ class Booking extends Model
     public function scopeOverdue($query)
     {
         return $query->where('booking_status', BookingStatusEnum::IN_PROGRESS)
-                     ->where('end_datetime', '<', now())
-                     ->whereNull('actual_end_datetime');
+            ->where('end_datetime', '<', now())
+            ->whereNull('actual_end_datetime');
     }
 
     // =====================

@@ -6,20 +6,23 @@ namespace App\Livewire\Assets;
 
 use App\Domains\Assets\Actions\StoreAssetMediaAction;
 use App\Domains\Assets\Actions\UpdateAssetAction;
-use App\Domains\Shared\Enums\Asset\TypeEnum;
 use App\Domains\Shared\Enums\Asset\ConditionEnum;
 use App\Domains\Shared\Enums\Asset\DeliveryMethodEnum;
+use App\Domains\Shared\Enums\Asset\TypeEnum;
 use App\Domains\Shared\Enums\Media\MediaPurpose;
 use App\Models\Asset;
 use App\Models\Media;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-
 
 class Edit extends Component
 {
     use WithFileUploads;
+
     public array $newPhotos = [];
+
     public Asset $asset;
     // ↑ Livewire supports model binding via route parameters.
     // When the route has {asset}, Livewire automatically finds
@@ -27,21 +30,36 @@ class Edit extends Component
     // This is called Livewire Route Model Binding.
     // It works because the property type is Asset.
 
-    public string $title        = '';
-    public string $description  = '';
-    public string $asset_type   = '';
-    public string $condition    = '';
-    public string $region       = '';
+    public string $title = '';
+
+    public string $description = '';
+
+    public string $asset_type = '';
+
+    public string $condition = '';
+
+    public string $region = '';
+
     public string $address_line = '';
-    public string $hourly_rate      = '';
-    public string $daily_rate       = '';
-    public string $weekly_rate      = '';
-    public string $monthly_rate     = '';
+
+    public string $hourly_rate = '';
+
+    public string $daily_rate = '';
+
+    public string $weekly_rate = '';
+
+    public string $monthly_rate = '';
+
     public string $security_deposit = '';
-    public string $estimated_value  = '';
-    public string $delivery_method   = '';
+
+    public string $estimated_value = '';
+
+    public string $delivery_method = '';
+
     public string $service_radius_km = '';
-    public string $available_from  = '';
+
+    public string $available_from = '';
+
     public string $available_until = '';
 
     public function mount(Asset $asset): void
@@ -52,9 +70,9 @@ class Edit extends Component
         // We use it to pre-fill the form with existing asset data.
 
         // Replace $this->authorize('update', $asset) with this:
-    if (auth()->id() !== $asset->owner_id) {
-        abort(403, 'You do not own this asset.');
-    }
+        if (auth()->id() !== $asset->owner_id) {
+            abort(403, 'You do not own this asset.');
+        }
         // ↑ Checks if logged-in user can update this asset.
         // TODO: create AssetPolicy for this.
         // For now replace with manual check:
@@ -63,21 +81,21 @@ class Edit extends Component
         $this->asset = $asset;
 
         // Pre-fill all form properties from the existing asset.
-        $this->title           = $asset->title;
-        $this->description     = $asset->description ?? '';
-        $this->asset_type      = $asset->asset_type->value ?? $asset->asset_type;
-        $this->condition       = $asset->condition->value ?? $asset->condition;
-        $this->region          = $asset->region;
-        $this->address_line    = $asset->address_line ?? '';
-        $this->hourly_rate     = (string) $asset->hourly_rate;
-        $this->daily_rate      = (string) $asset->daily_rate;
-        $this->weekly_rate     = (string) ($asset->weekly_rate ?? '');
-        $this->monthly_rate    = (string) ($asset->monthly_rate ?? '');
+        $this->title = $asset->title;
+        $this->description = $asset->description ?? '';
+        $this->asset_type = $asset->asset_type->value ?? $asset->asset_type;
+        $this->condition = $asset->condition->value ?? $asset->condition;
+        $this->region = $asset->region;
+        $this->address_line = $asset->address_line ?? '';
+        $this->hourly_rate = (string) $asset->hourly_rate;
+        $this->daily_rate = (string) $asset->daily_rate;
+        $this->weekly_rate = (string) ($asset->weekly_rate ?? '');
+        $this->monthly_rate = (string) ($asset->monthly_rate ?? '');
         $this->security_deposit = (string) $asset->security_deposit;
-        $this->estimated_value  = (string) $asset->estimated_value;
+        $this->estimated_value = (string) $asset->estimated_value;
         $this->delivery_method = $asset->delivery_method?->value ?? '';
         $this->service_radius_km = (string) ($asset->service_radius_km ?? '50');
-        $this->available_from  = $asset->available_from?->format('Y-m-d') ?? '';
+        $this->available_from = $asset->available_from?->format('Y-m-d') ?? '';
         $this->available_until = $asset->available_until?->format('Y-m-d') ?? '';
         // ↑ ?->format() nullsafe operator.
         // If available_from is null, returns '' instead of crashing.
@@ -87,22 +105,22 @@ class Edit extends Component
     protected function rules(): array
     {
         return [
-            'title'            => ['required', 'string', 'min:5', 'max:255'],
-            'description'      => ['nullable', 'string', 'max:5000'],
-            'asset_type'       => ['required', 'string', 'in:' . implode(',', TypeEnum::values())],
-            'condition'        => ['required', 'string', 'in:' . implode(',', ConditionEnum::values())],
-            'region'           => ['required', 'string'],
-            'address_line'     => ['required', 'string', 'max:255'],
-            'hourly_rate'      => ['required', 'numeric', 'min:0'],
-            'daily_rate'       => ['required', 'numeric', 'min:0'],
-            'weekly_rate'      => ['nullable', 'numeric', 'min:0'],
-            'monthly_rate'     => ['nullable', 'numeric', 'min:0'],
+            'title' => ['required', 'string', 'min:5', 'max:255'],
+            'description' => ['nullable', 'string', 'max:5000'],
+            'asset_type' => ['required', 'string', 'in:'.implode(',', TypeEnum::values())],
+            'condition' => ['required', 'string', 'in:'.implode(',', ConditionEnum::values())],
+            'region' => ['required', 'string'],
+            'address_line' => ['required', 'string', 'max:255'],
+            'hourly_rate' => ['required', 'numeric', 'min:0'],
+            'daily_rate' => ['required', 'numeric', 'min:0'],
+            'weekly_rate' => ['nullable', 'numeric', 'min:0'],
+            'monthly_rate' => ['nullable', 'numeric', 'min:0'],
             'security_deposit' => ['required', 'numeric', 'min:0'],
-            'estimated_value'  => ['required', 'numeric', 'min:0'],
-            'delivery_method'  => ['nullable', 'string', 'in:' . implode(',', DeliveryMethodEnum::values())],
-            'service_radius_km'=> ['nullable', 'numeric', 'min:1', 'max:500'],
-            'available_from'   => ['nullable', 'date'],
-            'available_until'  => ['nullable', 'date', 'after:available_from'],
+            'estimated_value' => ['required', 'numeric', 'min:0'],
+            'delivery_method' => ['nullable', 'string', 'in:'.implode(',', DeliveryMethodEnum::values())],
+            'service_radius_km' => ['nullable', 'numeric', 'min:1', 'max:500'],
+            'available_from' => ['nullable', 'date'],
+            'available_until' => ['nullable', 'date', 'after:available_from'],
         ];
     }
 
@@ -115,22 +133,22 @@ class Edit extends Component
 
         $action->execute(
             data: [
-                'title'             => $this->title,
-                'description'       => $this->description ?: null,
-                'asset_type'        => $this->asset_type,
-                'condition'         => $this->condition,
-                'region'            => $this->region,
-                'address_line'      => $this->address_line,
-                'hourly_rate'       => $this->hourly_rate,
-                'daily_rate'        => $this->daily_rate,
-                'weekly_rate'       => $this->weekly_rate ?: null,
-                'monthly_rate'      => $this->monthly_rate ?: null,
-                'security_deposit'  => $this->security_deposit,
-                'estimated_value'   => $this->estimated_value,
-                'delivery_method'   => $this->delivery_method ?: null,
+                'title' => $this->title,
+                'description' => $this->description ?: null,
+                'asset_type' => $this->asset_type,
+                'condition' => $this->condition,
+                'region' => $this->region,
+                'address_line' => $this->address_line,
+                'hourly_rate' => $this->hourly_rate,
+                'daily_rate' => $this->daily_rate,
+                'weekly_rate' => $this->weekly_rate ?: null,
+                'monthly_rate' => $this->monthly_rate ?: null,
+                'security_deposit' => $this->security_deposit,
+                'estimated_value' => $this->estimated_value,
+                'delivery_method' => $this->delivery_method ?: null,
                 'service_radius_km' => $this->service_radius_km ?: 50,
-                'available_from'    => $this->available_from ?: null,
-                'available_until'   => $this->available_until ?: null,
+                'available_from' => $this->available_from ?: null,
+                'available_until' => $this->available_until ?: null,
             ],
             asset: $this->asset,
             owner: auth()->user(),
@@ -142,9 +160,21 @@ class Edit extends Component
         $this->redirect(route('assets.index'), navigate: true);
     }
 
-    public function getAssetTypesProperty(): array { return TypeEnum::values(); }
-    public function getConditionsProperty(): array { return ConditionEnum::values(); }
-    public function getDeliveryMethodsProperty(): array { return DeliveryMethodEnum::values(); }
+    public function getAssetTypesProperty(): array
+    {
+        return TypeEnum::values();
+    }
+
+    public function getConditionsProperty(): array
+    {
+        return ConditionEnum::values();
+    }
+
+    public function getDeliveryMethodsProperty(): array
+    {
+        return DeliveryMethodEnum::values();
+    }
+
     public function getEthiopianRegionsProperty(): array
     {
         return [
@@ -168,12 +198,12 @@ class Edit extends Component
     {
         $media = Media::find($mediaId);
 
-        if (!$media || $media->mediable_id !== $this->asset->id) {
+        if (! $media || $media->mediable_id !== $this->asset->id) {
             return;
         }
 
         // Delete file from disk
-        \Illuminate\Support\Facades\Storage::disk('public')
+        Storage::disk('public')
             ->delete($media->disk_path);
 
         // Delete the database record
@@ -199,16 +229,16 @@ class Edit extends Component
     public function uploadNewPhotos(): void
     {
         $this->validate([
-            'newPhotos'   => ['required', 'array', 'min:1', 'max:10'],
+            'newPhotos' => ['required', 'array', 'min:1', 'max:10'],
             'newPhotos.*' => ['image', 'mimes:jpeg,jpg,png,webp', 'max:10240'],
         ]);
 
         $action = app(StoreAssetMediaAction::class);
 
         $action->execute(
-            files:        $this->newPhotos,
-            asset:        $this->asset,
-            owner:        auth()->user(),
+            files: $this->newPhotos,
+            asset: $this->asset,
+            owner: auth()->user(),
             primaryIndex: -1,
             // ↑ -1 means "don't set any new photo as primary".
             // Existing primary stays primary unless owner explicitly changes it.
@@ -219,7 +249,8 @@ class Edit extends Component
         // ↑ Clear the upload input after successful upload.
         // Owner sees the new photos appear in existing photos section immediately.
     }
-    public function render(): \Illuminate\View\View
+
+    public function render(): View
     {
         return view('livewire.assets.edit', [
             'assetTypes' => TypeEnum::values(),

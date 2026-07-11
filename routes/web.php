@@ -1,16 +1,18 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Livewire\Dashboard;
+use App\Http\Controllers\API\V1\Bookings\ChapaCallbackController;
+use App\Http\Controllers\API\V1\Bookings\ChapaWebhookController;
 use App\Livewire\Assets\Browse;
-use App\Livewire\Assets\Show;
-use App\Livewire\Assets\Index;
 use App\Livewire\Assets\Create;
 use App\Livewire\Assets\Edit;
-use App\Livewire\Bookings\BookingShow;
-use App\Livewire\Bookings\BookingIndex;
+use App\Livewire\Assets\Index;
+use App\Livewire\Assets\Show;
 use App\Livewire\Bookings\BookingCreate;
+use App\Livewire\Bookings\BookingIndex;
+use App\Livewire\Bookings\BookingShow;
 use App\Livewire\Bookings\ReviewIndex;
+use App\Livewire\Dashboard;
+use Illuminate\Support\Facades\Route;
 
 // =====================================================
 // PUBLIC MARKETPLACE ROUTES
@@ -42,7 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/bookings', BookingIndex::class)
         ->name('bookings.index');
     Route::get('/assets/{asset}/book', BookingCreate::class)
-    ->name('bookings.create');
+        ->name('bookings.create');
     // =====================================================
     // PLACEHOLDERS — replace as each frontend module is built
     // =====================================================
@@ -58,11 +60,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return view('dashboard');
     })->name('reviews.index');
 
-
     // Reviews
     Route::get('/reviews', ReviewIndex::class)
         ->name('reviews.index');
-    });
+});
+Route::get('/payments/chapa/callback', ChapaCallbackController::class)
+    ->name('chapa.callback');
+Route::post('/webhooks/chapa', ChapaWebhookController::class);
 
 // =====================================================
 // PUBLIC WILDCARD — must come LAST

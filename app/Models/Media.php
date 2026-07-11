@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use App\Domains\Shared\Enums\Media\MediaType;
-use App\Domains\Shared\Enums\Media\MediaPurpose;
-use App\Domains\Shared\Enums\Media\VirusScanStatus;
 use App\Domains\Shared\Enums\Media\ContentModerationStatus;
+use App\Domains\Shared\Enums\Media\MediaPurpose;
+use App\Domains\Shared\Enums\Media\MediaType;
+use App\Domains\Shared\Enums\Media\VirusScanStatus;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
 // =====================
 // CONFIGURATION
 // =====================
-//--
+// --
 #[Fillable([
     'media_type',
     'mediable_type',
@@ -107,12 +107,10 @@ class Media extends Model
      * Resolve the public-facing URL for the media asset.
      * Prioritizes CDN for bandwidth optimization.
      */
-
     protected function publicUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () =>
-                $this->cdn_url
+            get: fn () => $this->cdn_url
                 ?? Storage::disk($this->disk_name)->url($this->disk_path)
         );
     }
@@ -123,7 +121,7 @@ class Media extends Model
     protected function isVerifiedSafe(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->virus_scan_status === VirusScanStatus::PASSED 
+            get: fn () => $this->virus_scan_status === VirusScanStatus::PASSED
                        && $this->content_moderation_status === ContentModerationStatus::APPROVED
         )->shouldCache();
     }
@@ -146,7 +144,7 @@ class Media extends Model
     public function scopeSafeForPublic($query)
     {
         return $query->where('virus_scan_status', VirusScanStatus::PASSED)
-                     ->where('content_moderation_status', ContentModerationStatus::APPROVED);
+            ->where('content_moderation_status', ContentModerationStatus::APPROVED);
     }
 
     // =====================

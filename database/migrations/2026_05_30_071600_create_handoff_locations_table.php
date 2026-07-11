@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('handoff_locations', function (Blueprint $table) {
-            //--handoff_locations (QR-Based Pickup Points)
+            // --handoff_locations (QR-Based Pickup Points)
             // Primary Key
             $table->ulid('id')->primary();
 
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('region', 100);
 
             // Operational Details
-            $table->jsonb('operating_hours_json')->nullable(); //--{ monday: { opens: '08:00', closes: '18:00' }, ... }
+            $table->jsonb('operating_hours_json')->nullable(); // --{ monday: { opens: '08:00', closes: '18:00' }, ... }
             $table->string('contact_person_name', 255)->nullable();
             $table->string('contact_phone', 20)->nullable();
             $table->string('contact_email', 255)->nullable();
@@ -37,7 +37,7 @@ return new class extends Migration
             // Handoff Capabilities (Hardware & Logistics Integration)
             $table->boolean('qr_checkpoint_enabled')->default(true);
             $table->boolean('thermal_imaging_enabled')->default(false);
-            $table->string('access_code', 100)->nullable(); //-- For automated gates
+            $table->string('access_code', 100)->nullable(); // -- For automated gates
             $table->boolean('parking_available')->default(true);
 
             // Audit

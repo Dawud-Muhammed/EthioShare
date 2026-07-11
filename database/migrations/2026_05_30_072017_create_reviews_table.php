@@ -13,52 +13,52 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('reviews', function (Blueprint $table) {
-            //--reviews = polymorphic rating system
-            //--primary key
+            // --reviews = polymorphic rating system
+            // --primary key
             $table->ulid('id')->primary();
 
-            //--polymorphic relationships
-            //--Creates `reviewable_type`, `reviewable_id` and the composite index
+            // --polymorphic relationships
+            // --Creates `reviewable_type`, `reviewable_id` and the composite index
             $table->ulidMorphs('reviewable');
 
-            //--reviewer and context
+            // --reviewer and context
             $table->foreignUlid('reviewer_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignUlid('booking_id')->nullable()->constrained('bookings'); //--Assuming nullable so a review isn't strictly destroyed if a booking record is purged
+            $table->foreignUlid('booking_id')->nullable()->constrained('bookings'); // --Assuming nullable so a review isn't strictly destroyed if a booking record is purged
 
-            //--rating and feedback
+            // --rating and feedback
             $table->unsignedTinyInteger('rating');
             $table->string('title', 255)->nullable();
             $table->text('comment')->nullable();
 
-            //--Detailed Scores (for users as renters/owners)
+            // --Detailed Scores (for users as renters/owners)
             $table->unsignedTinyInteger('cleanliness_rating')->nullable();
             $table->unsignedTinyInteger('punctuality_rating')->nullable();
             $table->unsignedTinyInteger('communication_rating')->nullable();
             $table->unsignedTinyInteger('condition_upon_return_rating')->nullable();
             $table->unsignedTinyInteger('value_for_money_rating')->nullable();
 
-            //--response and engagement
+            // --response and engagement
             $table->foreignUlid('response_from_reviewee_id')->nullable()->constrained('users')->nullOnDelete();
             $table->text('response_text')->nullable();
             $table->timestamp('responded_at')->nullable();
 
-            //--moderation
+            // --moderation
             $table->boolean('is_verified_booking')->default(false);
             $table->boolean('is_flagged')->default(false);
             $table->text('flag_reason')->nullable();
 
-            //audit
+            // audit
             $table->timestamps();
             $table->softDeletes();
 
-            //indexes
+            // indexes
             // Note: idx_reviewable, reviewer_id, and booking_id are handled by their respective helpers
             $table->index('created_at');
         });
 
-        //db st
-        
-            //rating and feedback
+        // db st
+
+        // rating and feedback
         DB::statement('
             ALTER TABLE reviews 
             ADD CONSTRAINT chk_rating CHECK (rating >= 1 AND rating <= 5),

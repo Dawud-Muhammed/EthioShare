@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Domains\Shared\Enums\User\AccountStatusEnum;
 use App\Models\Asset;
 use App\Models\Booking;
+use App\Models\Media;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -27,15 +28,15 @@ class DatabaseSeeder extends Seeder
             // YOUR REAL ADMIN USER — unchanged
             // =====================
             $adminUser = User::factory()->create([
-                'email'             => 'dawud2147@gmail.com',
-                'phone_number'      => '0970706318',
-                'password'          => 'XT97qcHw4mSM3rw',
-                'fayda_id'          => '810583097316',
-                'first_name'        => 'Admin',
-                'last_name'         => 'User',
-                'is_verified'       => true,
-                'account_status'    => AccountStatusEnum::ACTIVE,
-                'kyc_tier'          => 3,
+                'email' => 'dawud2147@gmail.com',
+                'phone_number' => '0970706318',
+                'password' => 'XT97qcHw4mSM3rw',
+                'fayda_id' => '810583097316',
+                'first_name' => 'Admin',
+                'last_name' => 'User',
+                'is_verified' => true,
+                'account_status' => AccountStatusEnum::ACTIVE,
+                'kyc_tier' => 3,
                 'total_trust_score' => 95,
             ]);
 
@@ -111,7 +112,7 @@ class DatabaseSeeder extends Seeder
             // AssetFactory at all. Separation of concerns, same as Booking's
             // asRenter()/asOwner() being separate from definition().
             $assets->each(function (Asset $asset) {
-                \App\Models\Media::factory()
+                Media::factory()
                     ->forAsset($asset)
                     ->create();
             });
@@ -136,12 +137,12 @@ class DatabaseSeeder extends Seeder
             // and few CANCELLED. Even splits across all 6 statuses
             // would look nothing like a real platform.
             $statusDistribution = [
-                'completed'     => 220, // 44%
-                'confirmed'     => 90,  // 18%
-                'pending'       => 75,  // 15%
-                'inProgress'    => 50,  // 10%
+                'completed' => 220, // 44%
+                'confirmed' => 90,  // 18%
+                'pending' => 75,  // 15%
+                'inProgress' => 50,  // 10%
                 'renterArrived' => 35,  // 7%
-                'cancelled'     => 30,  // 6%
+                'cancelled' => 30,  // 6%
             ];
             // Total = 500
 
@@ -165,8 +166,8 @@ class DatabaseSeeder extends Seeder
                     Booking::factory()
                         ->{$state}()
                         ->state([
-                            'asset_id'  => $asset->id,
-                            'owner_id'  => $owner->id,
+                            'asset_id' => $asset->id,
+                            'owner_id' => $owner->id,
                             'renter_id' => $renter->id,
                         ])
                         ->create();

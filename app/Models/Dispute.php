@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Shared\Enums\Dispute\ReasonEnum;
-use App\Shared\Enums\Dispute\StatusEnum;
+use App\Domains\Shared\Enums\Dispute\ReasonEnum;
+use App\Domains\Shared\Enums\Dispute\StatusEnum;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -30,7 +30,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'resolved_at',
     'appeal_count',
     'last_appeal_at',
-    'escalation_reason',    
+    'escalation_reason',
 ])]
 class Dispute extends Model
 {
@@ -57,7 +57,7 @@ class Dispute extends Model
 
             // Financial Adjustments
             'resolution_amount_credited' => 'decimal:2',
-            
+
             // Counters
             'appeal_count' => 'integer',
 
@@ -137,7 +137,7 @@ class Dispute extends Model
     public function scopeUnassigned($query)
     {
         return $query->whereNull('assigned_to_id')
-                     ->whereIn('dispute_status', [StatusEnum::OPEN, StatusEnum::ESCALATED]);
+            ->whereIn('dispute_status', [StatusEnum::OPEN, StatusEnum::ESCALATED]);
     }
 
     /**

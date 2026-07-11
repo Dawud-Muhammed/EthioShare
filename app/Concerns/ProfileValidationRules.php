@@ -64,7 +64,7 @@ trait ProfileValidationRules
     protected function phoneRules(?string $userId = null): array
     {
         return [
-            'required', 
+            'required',
             'string',
             'regex:/^(?:\+251|0)[97]\d{8}$/',
             $userId === null

@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace App\Domains\Assets\Actions;
 
@@ -14,14 +15,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class StoreAssetMediaAction{
-    public function execute(array $files, Asset $asset, User $owner, int $primaryIndex = 0): Collection{
-        return DB::transaction(function () use ($files, $asset, $owner, $primaryIndex){
+class StoreAssetMediaAction
+{
+    public function execute(array $files, Asset $asset, User $owner, int $primaryIndex = 0): Collection
+    {
+        return DB::transaction(function () use ($files, $asset, $owner, $primaryIndex) {
             $createMedia = collect();
 
             $this->demoteExistingPrimary($asset, $primaryIndex, count($files));
 
-            foreach($files as $index => $file){
+            foreach ($files as $index => $file) {
 
                 $isPrimary = ($index === $primaryIndex);
                 $storedPath = $this->storeFile($file, $asset);
@@ -30,28 +33,28 @@ class StoreAssetMediaAction{
                     'media_type' => MediaType::PHOTO,
                     'mediable_type' => Asset::class,
                     'mediable_id' => $asset->id,
-                    'file_name'   => $file->getClientOriginalName(),
-                    'mime_type'   => $file->getMimeType(),
+                    'file_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getMimeType(),
                     'file_size_bytes' => $file->getSize(),
-                    'file_hash'     => hash_file('sha256', $file->getRealPath()),
+                    'file_hash' => hash_file('sha256', $file->getRealPath()),
                     // TODO: Phase 2 — check for duplicate hash before storing.
 
-                    'disk_name'     => 'public',
+                    'disk_name' => 'public',
                     // ↑ Hardcoded for Phase 1. Local disk.
                     // TODO: Phase 2 — use config('filesystems.default')
                     // So switching to S3 only requires changing one config value.
 
-                    'disk_path'     => $storedPath,
+                    'disk_path' => $storedPath,
                     // ↑ The path returned by storeFile().
 
-                    'cdn_url'       => null,
+                    'cdn_url' => null,
                     // ↑ No CDN in Phase 1. Phase 2 this becomes the S3/CDN URL.
                     // TODO: Phase 2 — generate CDN URL after S3 upload.
 
                     'purpose' => MediaPurpose::ASSET_PHOTO,
                     'is_primary' => $isPrimary,
 
-                    'virus_scan_status'        => null,
+                    'virus_scan_status' => null,
                     // ↑ Phase 1: we skip virus scanning.
                     // TODO: Phase 2 — set to VirusScanStatus::PENDING
                     // and dispatch a ScanUploadedFileJob to process it.
@@ -61,7 +64,7 @@ class StoreAssetMediaAction{
                     // TODO: Phase 2 — set to ContentModerationStatus::PENDING
                     // and dispatch a ModerateMediaContentJob.
 
-                    'is_encrypted'  => false,
+                    'is_encrypted' => false,
                     // ↑ Phase 1: no encryption for asset photos.
                     // KYC documents WILL be encrypted in Phase 2.
                     // TODO: Phase 2 — encrypt sensitive media via KMS.
@@ -71,12 +74,14 @@ class StoreAssetMediaAction{
 
                 $createMedia->push($media);
             }
+
             return $createMedia;
         });
     }
-    
-    private function storeFile(UploadedFile $file, Asset $asset) : string {
-        $fileName = Str::ulid() . '.' . $file->getClientOriginalExtension();
+
+    private function storeFile(UploadedFile $file, Asset $asset): string
+    {
+        $fileName = Str::ulid().'.'.$file->getClientOriginalExtension();
 
         $directory = "assets/{$asset->id}";
         // ↑ Store all photos for one asset in one folder.
@@ -86,7 +91,9 @@ class StoreAssetMediaAction{
 
         return Storage::disk('public')->putFileAs($directory, $file, $fileName);
     }
-    private function demoteExistingPrimary(Asset $asset, int $primaryIndex, int $uploadCount): void{
+
+    private function demoteExistingPrimary(Asset $asset, int $primaryIndex, int $uploadCount): void
+    {
         if ($primaryIndex >= 0 && $primaryIndex < $uploadCount) {
             $asset->media()
                 ->where('purpose', MediaPurpose::ASSET_PHOTO)

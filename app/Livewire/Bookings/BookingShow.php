@@ -7,10 +7,14 @@ use App\Domains\Bookings\Actions\CompleteBookingAction;
 use App\Domains\Bookings\Actions\CompleteHandoffAction;
 use App\Domains\Bookings\Actions\ConfirmBookingAction;
 use App\Domains\Bookings\Actions\ConfirmRenterArrivalAction;
+use App\Domains\Bookings\Actions\InitializeEscrowAction;
+use App\Domains\Bookings\Exceptions\EscrowInitializationException;
 use App\Domains\Bookings\Exceptions\InvalidStateTransitionException;
 use App\Domains\Bookings\Exceptions\UnauthorizedBookingActionException;
 use App\Domains\Shared\Enums\Booking\BookingStatusEnum;
+use App\Domains\Shared\Enums\Booking\EscrowStatusEnum;
 use App\Models\Booking;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class BookingShow extends Component
@@ -19,10 +23,14 @@ class BookingShow extends Component
     // PROPERTIES
     // =====================
     public Booking $booking;
-    public string $successMessage  = '';
-    public string $errorMessage    = '';
-    public bool   $showCancelConfirm = false;
-    public string $cancelReason    = '';
+
+    public string $successMessage = '';
+
+    public string $errorMessage = '';
+
+    public bool $showCancelConfirm = false;
+
+    public string $cancelReason = '';
 
     // =====================
     // MOUNT
@@ -41,13 +49,13 @@ class BookingShow extends Component
     // COMPUTED PROPERTIES
     // =====================
 
-    #[\Livewire\Attributes\Computed]
+    #[Computed]
     public function isRenter(): bool
     {
         return auth()->id() === $this->booking->renter_id;
     }
 
-    #[\Livewire\Attributes\Computed]
+    #[Computed]
     public function isOwner(): bool
     {
         return auth()->id() === $this->booking->owner_id;
@@ -57,14 +65,14 @@ class BookingShow extends Component
     // ConfirmBookingAction moves PENDING → CONFIRMED.
     // The button must show BEFORE the transition, when status is PENDING.
     // Checking CONFIRMED means the button shows after it's already confirmed — wrong.
-    #[\Livewire\Attributes\Computed]
+    #[Computed]
     public function canConfirmBooking(): bool
     {
         return $this->isOwner
             && $this->booking->booking_status === BookingStatusEnum::PENDING;
     }
 
-    #[\Livewire\Attributes\Computed]
+    #[Computed]
     public function canCancel(): bool
     {
         $cancellableStatuses = [
@@ -80,21 +88,21 @@ class BookingShow extends Component
             && in_array($this->booking->booking_status, $cancellableStatuses, true);
     }
 
-    #[\Livewire\Attributes\Computed]
+    #[Computed]
     public function canArrive(): bool
     {
         return $this->isRenter
             && $this->booking->booking_status === BookingStatusEnum::CONFIRMED;
     }
 
-    #[\Livewire\Attributes\Computed]
+    #[Computed]
     public function canCompleteHandoff(): bool
     {
         return $this->isOwner
             && $this->booking->booking_status === BookingStatusEnum::RENTER_ARRIVED;
     }
 
-    #[\Livewire\Attributes\Computed]
+    #[Computed]
     public function canComplete(): bool
     {
         return $this->isOwner
@@ -137,8 +145,8 @@ class BookingShow extends Component
             );
 
             $this->showCancelConfirm = false;
-            $this->cancelReason      = '';
-            $this->successMessage    = 'Booking cancelled.';
+            $this->cancelReason = '';
+            $this->successMessage = 'Booking cancelled.';
 
         } catch (UnauthorizedBookingActionException $e) {
             $this->errorMessage = $e->getMessage();
@@ -196,6 +204,26 @@ class BookingShow extends Component
         }
     }
 
+    public function payNow(InitializeEscrowAction $action){
+    $this->errorMessage = '';
+
+    try {
+        $result = $action->execute($this->booking, auth()->user());
+    } catch (EscrowInitializationException $e) {
+        $this->errorMessage = $e->getMessage();
+        return;
+    }
+
+    return $this->redirect($result['checkout_url']);
+   }
+
+    #[Computed]
+    public function canPayNow(): bool
+    {
+        return $this->booking->renter_id === auth()->id()
+            && $this->booking->booking_status === BookingStatusEnum::PENDING
+            && $this->booking->escrow_status === EscrowStatusEnum::PENDING;
+    }
     // =====================
     // HELPERS
     // =====================
@@ -203,7 +231,7 @@ class BookingShow extends Component
     private function clearMessages(): void
     {
         $this->successMessage = '';
-        $this->errorMessage   = '';
+        $this->errorMessage = '';
     }
 
     // =====================

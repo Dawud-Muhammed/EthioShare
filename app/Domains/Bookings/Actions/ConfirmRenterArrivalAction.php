@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace App\Domains\Bookings\Actions;
 
@@ -9,17 +10,19 @@ use App\Domains\Shared\Enums\Booking\BookingStatusEnum;
 use App\Models\Booking;
 use App\Models\User;
 
-class ConfirmRenterArrivalAction {
-    public function execute(Booking $booking, User $user): Booking{
-        if($booking->renter_id !== $user->id){
+class ConfirmRenterArrivalAction
+{
+    public function execute(Booking $booking, User $user): Booking
+    {
+        if ($booking->renter_id !== $user->id) {
             throw new UnauthorizedBookingActionException(
                 'Only the renter can confirm that the Booking Owner is arrived.'
             );
         }
 
-        if($booking->booking_status !== BookingStatusEnum::CONFIRMED){
+        if ($booking->booking_status !== BookingStatusEnum::CONFIRMED) {
             throw new InvalidStateTransitionException(
-                'Cannot a renter arrived for a booking with status: ' . $booking->booking_status->value
+                'Cannot a renter arrived for a booking with status: '.$booking->booking_status->value
             );
         }
 

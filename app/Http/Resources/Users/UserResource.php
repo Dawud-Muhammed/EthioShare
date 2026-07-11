@@ -56,7 +56,7 @@ class UserResource extends JsonResource
             // on the users table could be 0 or null depending on your
             // seeder. The null check prevents (float) null → 0.0
             // silently looking like a real score of zero.
-            'total_trust_score' => !is_null($this->total_trust_score)
+            'total_trust_score' => ! is_null($this->total_trust_score)
                 ? (float) $this->total_trust_score
                 : null,
 

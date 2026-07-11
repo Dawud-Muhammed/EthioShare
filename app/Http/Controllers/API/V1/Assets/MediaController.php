@@ -10,12 +10,14 @@ use App\Http\Requests\Assets\StoreMediaRequest;
 use App\Models\Asset;
 use Illuminate\Http\JsonResponse;
 
-class MediaController extends Controller{
+class MediaController extends Controller
+{
     public function __construct(
         private readonly StoreAssetMediaAction $storeAssetMediaAction,
     ) {}
 
-    public function store(StoreMediaRequest $request, Asset $asset): JsonResponse{
+    public function store(StoreMediaRequest $request, Asset $asset): JsonResponse
+    {
         $mediaCollection = $this->storeAssetMediaAction->execute(
             files: $request->validated()['photos'],
             asset: $asset,
@@ -25,20 +27,20 @@ class MediaController extends Controller{
 
         return response()->json([
             'data' => $mediaCollection->map(fn ($media) => [
-                'id'         => $media->id,
-                'url'        => $media->public_url,
+                'id' => $media->id,
+                'url' => $media->public_url,
 
                 'is_primary' => $media->is_primary,
-                'file_name'  => $media->file_name,
-                'mime_type'  => $media->mime_type,
+                'file_name' => $media->file_name,
+                'mime_type' => $media->mime_type,
                 'size_bytes' => $media->file_size_bytes,
 
                 'meta' => [
-                'uploaded_count' => $mediaCollection->count(),
-                'asset_id'       => $asset->id,
-                'message'        => $mediaCollection->count() . ' photo(s) uploaded successfully.',
-            ],
-            ])
+                    'uploaded_count' => $mediaCollection->count(),
+                    'asset_id' => $asset->id,
+                    'message' => $mediaCollection->count().' photo(s) uploaded successfully.',
+                ],
+            ]),
         ], 201);
     }
 }

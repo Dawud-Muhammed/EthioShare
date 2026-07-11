@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-//--* Disable standard timestamps since audit logs are immutable.
+// --* Disable standard timestamps since audit logs are immutable.
 #[WithoutTimestamps]
 
 #[Fillable([
@@ -34,7 +34,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 class AuditLog extends Model
 {
     use HasFactory, HasUlids;
-    
+
     // =====================
     // CASTING PIPELINE
     // =====================

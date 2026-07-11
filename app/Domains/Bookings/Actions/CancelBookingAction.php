@@ -1,21 +1,23 @@
 <?php
-declare(strict_types = 1);
-namespace App\Domains\Bookings\Actions;
 
+declare(strict_types=1);
+
+namespace App\Domains\Bookings\Actions;
 
 use App\Domains\Bookings\Exceptions\InvalidStateTransitionException;
 use App\Domains\Bookings\Exceptions\UnauthorizedBookingActionException;
 use App\Domains\Shared\Enums\Booking\BookingStatusEnum;
 use App\Models\Booking;
 use App\Models\User;
-use Illuminate\Validation\UnauthorizedException;
 
-class CancelBookingAction{
-    public function execute(Booking $booking, User $cancelledBy, string $reason): Booking{
+class CancelBookingAction
+{
+    public function execute(Booking $booking, User $cancelledBy, string $reason): Booking
+    {
         $isOwner = $booking->owner_id = $cancelledBy->id;
-        $isRenter  = $booking->renter_id = $cancelledBy->id;
+        $isRenter = $booking->renter_id = $cancelledBy->id;
 
-        if($isOwner && !$isRenter){
+        if ($isOwner && ! $isRenter) {
             throw new UnauthorizedBookingActionException(
                 'Only the renter or owner can cancel this booking.'
             );
@@ -26,9 +28,9 @@ class CancelBookingAction{
             BookingStatusEnum::PENDING,
         ];
 
-        if(!in_array($booking->booking_status, $cansellabletatus, true)){
+        if (! in_array($booking->booking_status, $cansellabletatus, true)) {
             throw new InvalidStateTransitionException(
-                'Cannot cancel a booking with status: ' . $booking->booking_status->value
+                'Cannot cancel a booking with status: '.$booking->booking_status->value
             );
         }
 
@@ -43,6 +45,7 @@ class CancelBookingAction{
         $booking->update([
             'booking_status' => BookingStatusEnum::CANCELLED,
         ]);
+
         return $booking->refresh();
     }
 }

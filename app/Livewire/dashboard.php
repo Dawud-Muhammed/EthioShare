@@ -2,13 +2,14 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use Livewire\Attributes\Title;
+use Livewire\Component;
 
 #[Title('Overview')]
 class Dashboard extends Component
 {
     public array $overviewStats = [];
+
     public array $recentActivity = [];
 
     public function mount()

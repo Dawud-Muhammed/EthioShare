@@ -13,42 +13,42 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('bookings', function (Blueprint $table) {
-            //--primary id
+            // --primary id
             $table->ulid('id')->primary();
 
-            //--core relationships
-            //--note: restrict asset deletion if a booking exists
+            // --core relationships
+            // --note: restrict asset deletion if a booking exists
             $table->foreignUlid('asset_id')->constrained('assets')->restrictOnDelete();
             $table->foreignUlid('renter_id')->constrained('users')->cascadeOnDelete();
             $table->foreignUlid('owner_id')->constrained('users')->cascadeOnDelete();
 
-            //--rental period
+            // --rental period
             $table->timestamp('start_datetime');
             $table->timestamp('end_datetime');
             $table->timestamp('actual_start_datetime')->nullable();
             $table->timestamp('actual_end_datetime')->nullable();
 
-            //--pricingand scrow (immutable ledger)
+            // --pricingand scrow (immutable ledger)
             $table->decimal('rate_applied', 12, 2); // Hourly/daily/etc. captured at booking
             $table->decimal('total_rental_amount', 12, 2);
             $table->decimal('security_deposit_amount', 12, 2);
-            $table->decimal('platform_fee', 12, 2);  //5-10% of rental
-            $table->decimal('total_charged', 12, 2); //rental + fee + deposit
+            $table->decimal('platform_fee', 12, 2);  // 5-10% of rental
+            $table->decimal('total_charged', 12, 2); // rental + fee + deposit
 
-            //--status and workflow
+            // --status and workflow
             $table->enum('booking_status', [
-                'PENDING', 'CONFIRMED', 'RENTER_ARRIVED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'
+                'PENDING', 'CONFIRMED', 'RENTER_ARRIVED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED',
             ]);
             $table->enum('payment_status', [
-                'PENDING', 'AUTHORIZED', 'CAPTURED', 'REFUNDED', 'FAILED'
+                'PENDING', 'AUTHORIZED', 'CAPTURED', 'REFUNDED', 'FAILED',
             ]);
             $table->enum('escrow_status', [
-                'PENDING', 'FUNDED', 'HELD', 'RELEASED', 'PARTIALLY_REALISED'
+                'PENDING', 'FUNDED', 'HELD', 'RELEASED', 'PARTIALLY_REALISED',
             ]);
 
-            //--handoff and logistics
-            $table->enum('handoff_method',[
-                'QR_CODE', 'MANUAL_KEY', 'DIGITAL_ACCESS', 'LOCATION_PICKUP'
+            // --handoff and logistics
+            $table->enum('handoff_method', [
+                'QR_CODE', 'MANUAL_KEY', 'DIGITAL_ACCESS', 'LOCATION_PICKUP',
             ]);
 
             // Assuming these related tables will be created, using nullable relationships
@@ -57,17 +57,17 @@ return new class extends Migration
             $table->timestamp('handoff_completed_at')->nullable();
             $table->foreignUlid('handoff_verified_by')->nullable()->constrained('users');
 
-            //--review and dispute
+            // --review and dispute
             $table->timestamp('renter_review_submitted_at')->nullable();
             $table->timestamp('owner_review_submitted_at')->nullable();
             // Remove or modify the line that attaches the constraint immediately
             $table->ulid('dispute_id')->nullable();
 
-            //--audit
+            // --audit
             $table->timestamps();
             $table->softDeletes();
 
-            //--query optimization indexes
+            // --query optimization indexes
             $table->index('booking_status');
             $table->index('payment_status');
             $table->index('escrow_status');

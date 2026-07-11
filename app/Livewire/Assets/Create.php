@@ -7,10 +7,11 @@ namespace App\Livewire\Assets;
 use App\Domains\Assets\Actions\CreateAssetAction;
 use App\Domains\Assets\Actions\PublishAssetAction;
 use App\Domains\Assets\Actions\StoreAssetMediaAction;
-use App\Domains\Shared\Enums\Asset\TypeEnum;
 use App\Domains\Shared\Enums\Asset\ConditionEnum;
 use App\Domains\Shared\Enums\Asset\DeliveryMethodEnum;
+use App\Domains\Shared\Enums\Asset\TypeEnum;
 use App\Models\Asset;
+use Illuminate\View\View;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -24,7 +25,8 @@ class Create extends Component
     // =========================================================
 
     public int $currentStep = 1;
-    public int $totalSteps  = 3;
+
+    public int $totalSteps = 3;
     // ↑ Public properties in Livewire are reactive.
     // When $currentStep changes, Livewire automatically re-renders
     // the component with the new value.
@@ -34,27 +36,39 @@ class Create extends Component
     // STEP 1 PROPERTIES — Asset Details
     // =========================================================
 
-    public string $title        = '';
-    public string $description  = '';
-    public string $asset_type   = '';
-    public string $condition    = '';
-    public string $region       = '';
+    public string $title = '';
+
+    public string $description = '';
+
+    public string $asset_type = '';
+
+    public string $condition = '';
+
+    public string $region = '';
+
     public string $address_line = '';
 
-    public string $hourly_rate      = '';
-    public string $daily_rate       = '';
-    public string $weekly_rate      = '';
-    public string $monthly_rate     = '';
-    public string $security_deposit = '';
-    public string $estimated_value  = '';
+    public string $hourly_rate = '';
 
-    public string $delivery_method   = '';
+    public string $daily_rate = '';
+
+    public string $weekly_rate = '';
+
+    public string $monthly_rate = '';
+
+    public string $security_deposit = '';
+
+    public string $estimated_value = '';
+
+    public string $delivery_method = '';
+
     public string $service_radius_km = '50';
     // ↑ Default 50 matches your migration default.
     // String type because HTML inputs always return strings.
     // The action handles numeric conversion automatically.
 
-    public string $available_from  = '';
+    public string $available_from = '';
+
     public string $available_until = '';
 
     // =========================================================
@@ -131,20 +145,20 @@ class Create extends Component
     protected function step1Rules(): array
     {
         return [
-            'title'           => ['required', 'string', 'min:5', 'max:255'],
-            'asset_type'      => ['required', 'string', 'in:' . implode(',', TypeEnum::values())],
-            'condition'       => ['required', 'string', 'in:' . implode(',', ConditionEnum::values())],
-            'region'          => ['required', 'string'],
-            'address_line'    => ['required', 'string', 'max:255'],
-            'hourly_rate'     => ['required', 'numeric', 'min:0'],
-            'daily_rate'      => ['required', 'numeric', 'min:0'],
-            'security_deposit'=> ['required', 'numeric', 'min:0'],
+            'title' => ['required', 'string', 'min:5', 'max:255'],
+            'asset_type' => ['required', 'string', 'in:'.implode(',', TypeEnum::values())],
+            'condition' => ['required', 'string', 'in:'.implode(',', ConditionEnum::values())],
+            'region' => ['required', 'string'],
+            'address_line' => ['required', 'string', 'max:255'],
+            'hourly_rate' => ['required', 'numeric', 'min:0'],
+            'daily_rate' => ['required', 'numeric', 'min:0'],
+            'security_deposit' => ['required', 'numeric', 'min:0'],
             'estimated_value' => ['required', 'numeric', 'min:0'],
-            'weekly_rate'     => ['nullable', 'numeric', 'min:0'],
-            'monthly_rate'    => ['nullable', 'numeric', 'min:0'],
-            'available_from'  => ['nullable', 'date'],
+            'weekly_rate' => ['nullable', 'numeric', 'min:0'],
+            'monthly_rate' => ['nullable', 'numeric', 'min:0'],
+            'available_from' => ['nullable', 'date'],
             'available_until' => ['nullable', 'date', 'after:available_from'],
-            'delivery_method' => ['nullable', 'string', 'in:' . implode(',', DeliveryMethodEnum::values())],
+            'delivery_method' => ['nullable', 'string', 'in:'.implode(',', DeliveryMethodEnum::values())],
             'service_radius_km' => ['nullable', 'numeric', 'min:1', 'max:500'],
         ];
     }
@@ -152,7 +166,7 @@ class Create extends Component
     protected function step2Rules(): array
     {
         return [
-            'photos'   => ['required', 'array', 'min:1', 'max:10'],
+            'photos' => ['required', 'array', 'min:1', 'max:10'],
             'photos.*' => ['image', 'mimes:jpeg,jpg,png,webp', 'max:10240'],
         ];
     }
@@ -222,21 +236,21 @@ class Create extends Component
 
         $this->createdAsset = $action->execute(
             data: [
-                'title'             => $this->title,
-                'description'       => $this->description ?: null,
-                'asset_type'        => $this->asset_type,
-                'condition'         => $this->condition,
-                'region'            => $this->region,
-                'address_line'      => $this->address_line,
-                'hourly_rate'       => $this->hourly_rate,
-                'daily_rate'        => $this->daily_rate,
-                'weekly_rate'       => $this->weekly_rate ?: null,
-                'monthly_rate'      => $this->monthly_rate ?: null,
-                'security_deposit'  => $this->security_deposit,
-                'estimated_value'   => $this->estimated_value,
-                'available_from'    => $this->available_from ?: null,
-                'available_until'   => $this->available_until ?: null,
-                'delivery_method'   => $this->delivery_method ?: null,
+                'title' => $this->title,
+                'description' => $this->description ?: null,
+                'asset_type' => $this->asset_type,
+                'condition' => $this->condition,
+                'region' => $this->region,
+                'address_line' => $this->address_line,
+                'hourly_rate' => $this->hourly_rate,
+                'daily_rate' => $this->daily_rate,
+                'weekly_rate' => $this->weekly_rate ?: null,
+                'monthly_rate' => $this->monthly_rate ?: null,
+                'security_deposit' => $this->security_deposit,
+                'estimated_value' => $this->estimated_value,
+                'available_from' => $this->available_from ?: null,
+                'available_until' => $this->available_until ?: null,
+                'delivery_method' => $this->delivery_method ?: null,
                 'service_radius_km' => $this->service_radius_km ?: 50,
             ],
             owner: auth()->user(),
@@ -250,9 +264,9 @@ class Create extends Component
         $action = app(StoreAssetMediaAction::class);
 
         $action->execute(
-            files:        $this->photos,
-            asset:        $this->createdAsset,
-            owner:        auth()->user(),
+            files: $this->photos,
+            asset: $this->createdAsset,
+            owner: auth()->user(),
             primaryIndex: $this->primaryIndex,
         );
     }
@@ -316,13 +330,13 @@ class Create extends Component
     // RENDER
     // =========================================================
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.assets.create', [
-        'assetTypes' => TypeEnum::values(),
-        'conditions' => ConditionEnum::values(),
-        'deliveryMethods' => DeliveryMethodEnum::values(),
-        'ethiopianRegions' => $this->ethiopianRegions,
+            'assetTypes' => TypeEnum::values(),
+            'conditions' => ConditionEnum::values(),
+            'deliveryMethods' => DeliveryMethodEnum::values(),
+            'ethiopianRegions' => $this->ethiopianRegions,
         ])
             ->layout('layouts.app');
     }

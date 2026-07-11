@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Livewire\Bookings;
 
-use Livewire\Component;
+use App\Domains\Assets\Exceptions\AssetNotAvailableException as AssetStatusException;
+use App\Domains\Bookings\Actions\CreateBookingAction;
+use App\Domains\Bookings\Exceptions\AssetNotAvailableException;
+use App\Domains\Shared\Enums\Booking\HandoffMethodEnum;
+use App\Http\Requests\Bookings\CreateBookingRequest;
 use App\Models\Asset;
 use App\Models\Booking;
-use App\Domains\Bookings\Actions\CreateBookingAction;
-use App\Domains\Shared\Enums\Booking\HandoffMethodEnum;
-use App\Domains\Bookings\Exceptions\AssetNotAvailableException;
-use App\Domains\Assets\Exceptions\AssetNotAvailableException as AssetStatusException;
 use Illuminate\Support\Carbon;
+use Illuminate\View\View;
+use Livewire\Component;
 
 class BookingCreate extends Component
 {
@@ -27,7 +29,8 @@ class BookingCreate extends Component
     // We store the raw string from the datetime input and parse
     // it to Carbon only when we need to do math or pass to the action.
     public string $startDatetime = '';
-    public string $endDatetime   = '';
+
+    public string $endDatetime = '';
 
     // Why string not enum?
     // Same reason — enums aren't directly wire:model compatible.
@@ -39,10 +42,13 @@ class BookingCreate extends Component
     // Computed properties recalculate on every render — fine.
     // But we need to show a live pricing preview as dates change,
     // which means these values need to update instantly.
-    public float $estimatedHours        = 0;
+    public float $estimatedHours = 0;
+
     public float $estimatedRentalAmount = 0;
-    public float $estimatedPlatformFee  = 0;
-    public float $estimatedTotal        = 0;
+
+    public float $estimatedPlatformFee = 0;
+
+    public float $estimatedTotal = 0;
 
     public string $errorMessage = '';
 
@@ -106,7 +112,7 @@ class BookingCreate extends Component
 
         try {
             $start = Carbon::parse($this->startDatetime);
-            $end   = Carbon::parse($this->endDatetime);
+            $end = Carbon::parse($this->endDatetime);
 
             // Why return silently if end <= start?
             // The validation rule will catch this on submit.
@@ -117,9 +123,9 @@ class BookingCreate extends Component
 
             // Why ceil()? Same reason as CreateBookingAction —
             // partial hours bill as full hours.
-            $this->estimatedHours        = ceil($start->diffInHours($end));
+            $this->estimatedHours = ceil($start->diffInHours($end));
             $this->estimatedRentalAmount = $this->estimatedHours * $this->asset->hourly_rate;
-            $this->estimatedPlatformFee  = round($this->estimatedRentalAmount * 0.075, 2);
+            $this->estimatedPlatformFee = round($this->estimatedRentalAmount * 0.075, 2);
 
             // Why include deposit in estimated total?
             // The renter needs to know the full amount they'll be
@@ -154,16 +160,16 @@ class BookingCreate extends Component
         // same rules, same error messages, same @error() in the view.
         $this->validate([
             'startDatetime' => ['required', 'date', 'after:now'],
-            'endDatetime'   => ['required', 'date', 'after:startDatetime'],
+            'endDatetime' => ['required', 'date', 'after:startDatetime'],
             'handoffMethod' => [
                 'required',
-                'in:' . implode(',', HandoffMethodEnum::values()),
+                'in:'.implode(',', HandoffMethodEnum::values()),
             ],
         ], [
             'startDatetime.required' => 'Please choose a start date and time.',
-            'startDatetime.after'    => 'The start time must be in the future.',
-            'endDatetime.required'   => 'Please choose an end date and time.',
-            'endDatetime.after'      => 'The end time must be after the start time.',
+            'startDatetime.after' => 'The start time must be in the future.',
+            'endDatetime.required' => 'Please choose an end date and time.',
+            'endDatetime.after' => 'The end time must be after the start time.',
             'handoffMethod.required' => 'Please choose a handoff method.',
         ]);
 
@@ -175,17 +181,17 @@ class BookingCreate extends Component
             // data so the action interface stays unchanged — the action
             // doesn't need to know it's being called from Livewire.
             // This keeps your action reusable from both HTTP and Livewire.
-            $fakeRequest = new \App\Http\Requests\Bookings\CreateBookingRequest();
+            $fakeRequest = new CreateBookingRequest;
             $fakeRequest->setValidator(
                 validator([
-                    'asset_id'       => $this->asset->id,
+                    'asset_id' => $this->asset->id,
                     'start_datetime' => $this->startDatetime,
-                    'end_datetime'   => $this->endDatetime,
+                    'end_datetime' => $this->endDatetime,
                     'handoff_method' => $this->handoffMethod,
                 ], [
-                    'asset_id'       => 'required|string',
+                    'asset_id' => 'required|string',
                     'start_datetime' => 'required|date',
-                    'end_datetime'   => 'required|date',
+                    'end_datetime' => 'required|date',
                     'handoff_method' => 'required|string',
                 ])
             );
@@ -217,7 +223,7 @@ class BookingCreate extends Component
     // RENDER
     // =====================
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.bookings.create', [
             'handoffMethods' => HandoffMethodEnum::cases(),

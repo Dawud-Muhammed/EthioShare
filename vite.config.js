@@ -11,9 +11,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
-                /* @chisel-passkeys */
                 'resources/js/passkeys.js',
-                /* @end-chisel-passkeys */
             ],
             refresh: true,
             fonts: [
@@ -25,9 +23,16 @@ export default defineConfig({
         tailwindcss(),
     ],
     server: {
-        cors: true,
-        watch: {
-            ignored: ['**/storage/framework/views/**'],
-        },
+    cors: true,
+    watch: {
+        ignored: ['**/storage/framework/views/**'],
     },
+    host: '0.0.0.0',
+    origin: 'https://psychologically-aprowl-tisa.ngrok-free.dev', 
+    hmr: {
+        host: 'psychologically-aprowl-tisa.ngrok-free.dev',
+        protocol: 'wss',
+        clientPort: 443,
+    },
+},
 });

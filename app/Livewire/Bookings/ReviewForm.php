@@ -7,8 +7,9 @@ use App\Domains\Bookings\Exceptions\InvalidStateTransitionException;
 use App\Domains\Bookings\Exceptions\UnauthorizedBookingActionException;
 use App\Models\Booking;
 use App\Models\Review;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class ReviewForm extends Component
@@ -19,10 +20,12 @@ class ReviewForm extends Component
     // Form fields — these are reactive, meaning any change in the
     // Blade view is immediately reflected here without a page reload
     public int $rating = 0;
+
     public string $comment = '';
 
     // UI state flags
     public bool $submitted = false;
+
     public string $errorMessage = '';
 
     // Holds the review model after successful submission
@@ -72,7 +75,7 @@ class ReviewForm extends Component
         $this->errorMessage = '';
 
         $this->validate([
-            'rating'  => ['required', 'integer', 'min:1', 'max:5'],
+            'rating' => ['required', 'integer', 'min:1', 'max:5'],
             'comment' => ['nullable', 'string', 'min:10', 'max:2000'],
         ]);
 
@@ -85,7 +88,7 @@ class ReviewForm extends Component
             );
 
             $this->submittedReview = $review;
-            $this->booking->renter_review_submitted_at = \Illuminate\Support\Carbon::now();
+            $this->booking->renter_review_submitted_at = Carbon::now();
             $this->submitted = true;
             $this->dispatch('reviewSubmitted');
 
@@ -97,7 +100,7 @@ class ReviewForm extends Component
         }
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.bookings.review-form');
     }

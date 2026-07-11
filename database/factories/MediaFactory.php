@@ -6,6 +6,7 @@ use App\Domains\Shared\Enums\Media\ContentModerationStatus;
 use App\Domains\Shared\Enums\Media\MediaPurpose;
 use App\Domains\Shared\Enums\Media\MediaType;
 use App\Domains\Shared\Enums\Media\VirusScanStatus;
+use App\Models\Asset;
 use App\Models\Media;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -38,10 +39,10 @@ class MediaFactory extends Factory
             // setting them via ->state() at call time is the correct
             // pattern, same as owner_id on AssetFactory.
 
-            'file_name'       => "asset-photo-{$seed}.jpg",
-            'mime_type'       => 'image/jpeg',
+            'file_name' => "asset-photo-{$seed}.jpg",
+            'mime_type' => 'image/jpeg',
             'file_size_bytes' => fake()->numberBetween(80_000, 900_000),
-            'file_hash'       => hash('sha256', (string) $seed),
+            'file_hash' => hash('sha256', (string) $seed),
 
             // Why disk_name and disk_path still get realistic-looking
             // values even though we're not storing a real file?
@@ -62,9 +63,9 @@ class MediaFactory extends Factory
             // real file uploads.
             'cdn_url' => "https://picsum.photos/seed/{$seed}/800/600",
 
-            'purpose'        => MediaPurpose::ASSET_PHOTO,
-            'upload_reason'  => null,
-            'is_primary'     => true,
+            'purpose' => MediaPurpose::ASSET_PHOTO,
+            'upload_reason' => null,
+            'is_primary' => true,
 
             // Why PASSED/APPROVED and not PENDING?
             // Your scopeSafeForPublic() filters on exactly these two
@@ -73,10 +74,10 @@ class MediaFactory extends Factory
             // having media rows — invisible, confusing bug. Seeding
             // them as already-verified matches what real photos would
             // look like after passing moderation.
-            'virus_scan_status'         => VirusScanStatus::PASSED,
+            'virus_scan_status' => VirusScanStatus::PASSED,
             'content_moderation_status' => ContentModerationStatus::APPROVED,
 
-            'is_encrypted'      => false,
+            'is_encrypted' => false,
             'encryption_key_id' => null,
 
             'uploaded_by_id' => User::factory(),
@@ -89,11 +90,11 @@ class MediaFactory extends Factory
      * Booking::factory()->asRenter($user). Reads cleanly at the
      * call site: Media::factory()->forAsset($asset)->create().
      */
-    public function forAsset(\App\Models\Asset $asset): static
+    public function forAsset(Asset $asset): static
     {
         return $this->state(fn (array $attributes) => [
-            'mediable_type'  => \App\Models\Asset::class,
-            'mediable_id'    => $asset->id,
+            'mediable_type' => Asset::class,
+            'mediable_id' => $asset->id,
             'uploaded_by_id' => $asset->owner_id,
         ]);
     }

@@ -1,5 +1,7 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
 namespace App\Domains\Assets\Exceptions;
 
-class AssetNotAvailableException extends \Exception{}
+class AssetNotAvailableException extends \Exception {}

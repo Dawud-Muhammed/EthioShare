@@ -96,7 +96,6 @@
                     </div>
                 </div>
 
-                {{-- Actual times — only show if rental has started --}}
                 @if ($this->booking->actual_start_datetime)
                     <div class="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-700 grid grid-cols-2 gap-4 text-sm">
                         <div>
@@ -129,7 +128,6 @@
 
                 <div class="grid grid-cols-2 gap-6">
 
-                    {{-- RENTER --}}
                     <div>
                         <flux:text class="text-xs text-zinc-500 uppercase tracking-wide mb-2">
                             {{ __('Renter') }}
@@ -154,7 +152,6 @@
                         </div>
                     </div>
 
-                    {{-- OWNER --}}
                     <div>
                         <flux:text class="text-xs text-zinc-500 uppercase tracking-wide mb-2">
                             {{ __('Owner') }}
@@ -271,10 +268,10 @@
                         <flux:text class="text-xs text-zinc-600 dark:text-zinc-300">
                             @switch($this->booking->booking_status->value)
                                 @case('PENDING')
-                                    @if ($this->isOwner)
-                                        ⏳ {{ __('A renter has requested this asset. Review and confirm or cancel.') }}
+                                    @if ($this->isRenter)
+                                        💳 {{ __('Complete payment to confirm this booking.') }}
                                     @else
-                                        ⏳ {{ __('Waiting for the owner to confirm your request.') }}
+                                        ⏳ {{ __('Waiting for the renter to complete payment.') }}
                                     @endif
                                     @break
 
@@ -320,20 +317,28 @@
                          BookingShow.php — not here.
                          ============================================ --}}
 
-                    {{-- CONFIRM BOOKING — owner only, PENDING --}}
-                    @if ($this->canConfirmBooking)
+                    {{-- PAY NOW — renter only, PENDING & unpaid.
+                         This REPLACES the old owner-facing "Confirm
+                         Booking" button. Confirmation now only ever
+                         happens inside the Chapa webhook handler, after
+                         payment is verified — never from a manual click
+                         on this page. --}}
+                    @if ($this->canPayNow)
                         <flux:button
-                            wire:click="confirmBooking"
+                            wire:click="payNow"
                             wire:loading.attr="disabled"
                             variant="primary"
                             class="w-full">
-                            <span wire:loading.remove wire:target="confirmBooking">
-                                ✓ {{ __('Confirm Booking') }}
+                            <span wire:loading.remove wire:target="payNow">
+                                💳 {{ __('Pay Now') }} — ETB {{ number_format($this->booking->total_charged, 2) }}
                             </span>
-                            <span wire:loading wire:target="confirmBooking">
-                                {{ __('Confirming...') }}
+                            <span wire:loading wire:target="payNow">
+                                {{ __('Redirecting to Chapa...') }}
                             </span>
                         </flux:button>
+                        <flux:text class="text-xs text-zinc-500 dark:text-zinc-400 text-center block">
+                            {{ __("You'll be redirected to Chapa's secure checkout to complete payment.") }}
+                        </flux:text>
                     @endif
 
                     {{-- CONFIRM ARRIVAL — renter only, CONFIRMED --}}
@@ -388,7 +393,6 @@
                     @if ($this->canCancel)
 
                         @if (!$showCancelConfirm)
-                            {{-- First click — show confirmation --}}
                             <flux:button
                                 wire:click="$set('showCancelConfirm', true)"
                                 variant="ghost"
@@ -397,7 +401,6 @@
                             </flux:button>
 
                         @else
-                            {{-- CANCEL CONFIRMATION --}}
                             <div class="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-4 space-y-3">
 
                                 <flux:text class="text-sm font-medium text-red-800 dark:text-red-400">
@@ -477,8 +480,6 @@
                         $allStatuses = ['PENDING', 'CONFIRMED', 'RENTER_ARRIVED', 'IN_PROGRESS', 'COMPLETED'];
                         $currentStatus = $this->booking->booking_status->value;
                         $isCancelled = $currentStatus === 'CANCELLED';
-
-                        // Find the index of current status in the normal flow
                         $currentIndex = array_search($currentStatus, $allStatuses);
                     @endphp
 
@@ -520,7 +521,6 @@
                                     </span>
                                 </div>
 
-                                {{-- Connecting line between dots --}}
                                 @if (!$loop->last)
                                     <div class="ml-1.5 w-px h-4 {{ $isPast ? 'bg-green-300 dark:bg-green-700' : 'bg-zinc-200 dark:bg-zinc-600' }}"></div>
                                 @endif
@@ -535,19 +535,16 @@
             </div>
         </div>
         {{-- ===================== END RIGHT COLUMN ===================== --}}
-        
+
         {{-- ===================== REVIEW SECTION ===================== --}}
-            {{-- Only rendered after the booking reaches COMPLETED status.
-                The component itself guards internally via $isRenter, so
-                the owner sees nothing even though this block is included. --}}
-            @if ($this->booking->booking_status->value === 'COMPLETED')
-                <div class="mt-6 max-w-2xl">
-                    <livewire:bookings.review-form
-                        :booking="$this->booking"
-                        :key="'review-' . $this->booking->id"
-                    />
-                </div>
-            @endif
+        @if ($this->booking->booking_status->value === 'COMPLETED')
+            <div class="mt-6 max-w-2xl">
+                <livewire:bookings.review-form
+                    :booking="$this->booking"
+                    :key="'review-' . $this->booking->id"
+                />
+            </div>
+        @endif
         {{-- ===================== END REVIEW SECTION ===================== --}}
 
     </div>

@@ -1,24 +1,30 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace App\Domains\Assets\Actions;
 
 use App\Domains\Shared\Enums\Asset\StatusEnum;
 use App\Models\Asset;
 use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
-class UpdateAssetStatusAction{
+class UpdateAssetStatusAction
+{
     private const ALLOWED_TRANSITIONS = [
-        'DRAFT'  => ['DELISTED'],
+        'DRAFT' => ['DELISTED'],
         'ACTIVE' => ['PAUSED', 'DELISTED'],
         'PAUSED' => ['ACTIVE', 'DELISTED'],
     ];
-    public function execute(string $newStatus, Asset $asset, User $owner, ?string $reason = null): Asset{
+
+    public function execute(string $newStatus, Asset $asset, User $owner, ?string $reason = null): Asset
+    {
         $this->ensureOwnership($asset, $owner);
         $this->ensureTransitionIsAllowed($asset, $newStatus);
 
-        return DB::transaction(function () use ($asset, $newStatus, $reason){
+        return DB::transaction(function () use ($asset, $newStatus, $reason) {
             $asset->update([
                 'status' => $newStatus,
                 'status->updated_at' => now(),
@@ -35,17 +41,18 @@ class UpdateAssetStatusAction{
             // ]);
             // For now we store reason in a log so it is not lost:
 
-            if($newStatus === StatusEnum::DELISTED->value && $reason){
-                \Illuminate\Support\Facades\Log::info('Asset delisted', [
-                    'asset_id'  => $asset->id,
-                    'owner_id'  => $asset->owner_id,
-                    'reason'    => $reason,
+            if ($newStatus === StatusEnum::DELISTED->value && $reason) {
+                Log::info('Asset delisted', [
+                    'asset_id' => $asset->id,
+                    'owner_id' => $asset->owner_id,
+                    'reason' => $reason,
                     'timestamp' => now(),
                 ]);
                 // ↑ Log::info() writes to storage/logs/laravel.log
                 // Not a permanent solution — but nothing is lost.
                 // Phase 2 replaces this with the AuditLog model above.
             }
+
             // TODO: Phase 2 — dispatch status-specific events:
             // match($newStatus) {
             //     'PAUSED'   => event(new AssetPaused($asset)),
@@ -56,20 +63,23 @@ class UpdateAssetStatusAction{
         });
     }
 
-    private function ensureOwnership(Asset $asset, User $owner): void{
-        if($asset->owner_id !== $owner->id){
-            throw new \Illuminate\Auth\Access\AuthorizationException(
+    private function ensureOwnership(Asset $asset, User $owner): void
+    {
+        if ($asset->owner_id !== $owner->id) {
+            throw new AuthorizationException(
                 'this asset is not yours'
             );
         }
     }
-    private function ensureTransitionIsAllowed(Asset $asset, string $newStatus): void{
-        $currentStatus = $asset->status->value;
-        $allowedStatusTransition = self::ALLOWED_TRANSITIONS[$currentStatus] ?? []; 
 
-        if(!in_array($newStatus, $allowedStatusTransition)){
+    private function ensureTransitionIsAllowed(Asset $asset, string $newStatus): void
+    {
+        $currentStatus = $asset->status->value;
+        $allowedStatusTransition = self::ALLOWED_TRANSITIONS[$currentStatus] ?? [];
+
+        if (! in_array($newStatus, $allowedStatusTransition)) {
             throw new \InvalidArgumentException(
-                "Cannot transition asset from {$currentStatus} to {$newStatus}. "."Allowed Transitions: ".implode(', ', $allowedStatusTransition) . (empty($allowedStatusTransition)? 'none': '')
+                "Cannot transition asset from {$currentStatus} to {$newStatus}. ".'Allowed Transitions: '.implode(', ', $allowedStatusTransition).(empty($allowedStatusTransition) ? 'none' : '')
             );
         }
     }
